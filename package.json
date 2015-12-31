@@ -1,0 +1,18 @@
+{
+  "name": "node_find",
+  "version": "0.0.1",
+  "description": "emulating some functions of UNIX find",
+  "main": "node_find.js",
+  "dependencies": {
+    "asynquence": "^0.8.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "A. Lloyd Flanagan",
+  "license": "GPL-3.0",
+  "repository": "alflanagan/node_find",
+  "private": true,
+  "engines" : { "node" : ">=5.3" } 
+}
