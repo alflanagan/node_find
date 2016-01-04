@@ -4,15 +4,26 @@
   "description": "emulating some functions of UNIX find",
   "main": "node_find.js",
   "dependencies": {
-    "asynquence": "^0.8.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.3.17",
+    "babel-preset-es2015": "^6.3.13"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./babel node-find.es6 -o node-find.js"
   },
   "author": "A. Lloyd Flanagan",
   "license": "GPL-3.0",
   "repository": "alflanagan/node_find",
   "private": true,
-  "engines" : { "node" : ">=5.3" } 
+  "engines": {
+    "node": ">=5.3"
+  },
+  "babel": {
+    "babelrc": false,
+    "presets": [
+      "es2015"
+    ]
+  }
 }
