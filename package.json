@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./babel node-find.es6 -o node-find.js"
+    "prepublish": "babel.cmd node_find.es6 -o node_find.js || ./babel node_find.es6 -o node_find.js"
   },
   "author": "A. Lloyd Flanagan",
   "license": "GPL-3.0",
@@ -25,5 +25,6 @@
     "presets": [
       "es2015"
     ]
-  }
+  },
+  "keywords": ["find", "utility", "command-line"]
 }
