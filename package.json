@@ -2,8 +2,12 @@
   "name": "node_find",
   "version": "0.0.1",
   "description": "emulating some functions of UNIX find",
-  "main": "node_find.js",
+  "preferGlobal": true,
+  "bin": {
+    "nodefind": "node_find.js"
+  },
   "dependencies": {
+    "yargs": "^3.31.0"
   },
   "devDependencies": {
     "babel-cli": "^6.3.17",
@@ -26,5 +30,9 @@
       "es2015"
     ]
   },
-  "keywords": ["find", "utility", "command-line"]
+  "keywords": [
+    "find",
+    "utility",
+    "command-line"
+  ]
 }
