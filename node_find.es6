@@ -1,5 +1,7 @@
 "use strict";
 
+import "babel-polyfill";
+
 var fs = require("fs");
 //TODO: replace node asserts with userland assertion library
 var assert = require("assert");
