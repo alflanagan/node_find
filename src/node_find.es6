@@ -21,7 +21,13 @@ var argv = require("yargs")
  *
  */
 function arg_require_in_set(value, iterable_of_required, message) {
-  console.log(`arg_require_in_set(${value}, [${iterable_of_required}])`);
+  // console.log(`arg_require_in_set(${value}, [${iterable_of_required}])`);
+
+  for (reqd in iterable_of_required) {
+    if (value === reqd) {
+      return;
+    }
+  }
 
   if (message === undefined) {
     message = "Argument must be one of [";
@@ -31,12 +37,6 @@ function arg_require_in_set(value, iterable_of_required, message) {
       first = false;
     }
     message += "]";
-  }
-
-  for (reqd in iterable_of_required) {
-    if (value === reqd) {
-      return;
-    }
   }
   throw new RangeError(message);
 }
@@ -49,8 +49,8 @@ function is_type_match(type_letter, fstat) {
 // shouldn't be too hard to write Promise-returning wrapper functions
 // for all the async calls in fs
 function readdirPromise(dirname) {
-  return new Promise(function (resolve, reject) {
-    fs.readdir(dirname, function (err, filelist) {
+  return new Promise(function(resolve, reject) {
+    fs.readdir(dirname, function(err, filelist) {
       if (err) reject(err);
       resolve(filelist);
     })
@@ -58,8 +58,8 @@ function readdirPromise(dirname) {
 }
 
 function statPromise(filename) {
-  return new Promise(function (resolve, reject) {
-    fs.stat(filename, function (err, fstat) {
+  return new Promise(function(resolve, reject) {
+    fs.stat(filename, function(err, fstat) {
       if (err) reject(err);
       resolve(fstat);
     })
@@ -70,11 +70,11 @@ function printContents(argv) {
   var dirname = argv._.toString();
   //console.log(`got dirname argument ${dirname}`);
   return readdirPromise(dirname)
-    .then(function (dirlist) {
+    .then(function(dirlist) {
       for (var dir in dirlist) {
         let fname = dirname + "/" + dirlist[dir];
         statPromise(fname)
-          .then(function (fstat) {
+          .then(function(fstat) {
             var selected = false;
             if (argv.t != undefined) {
               selected = is_type_match(argv.t, fstat);
@@ -86,11 +86,11 @@ function printContents(argv) {
                 console.log(fname);
               }
             }
-          }, function (err) {
+          }, function(err) {
             console.error("ERROR getting status of " + fname + ": " + err);
           });
       }
-    }, function (err) {
+    }, function(err) {
       console.error("ERROR reading directory " + dirname + ": " + err);
     })
 }
