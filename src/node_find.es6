@@ -21,9 +21,11 @@ var FilteredDirectoryTree = (args) => {
 }
 
 var argv = require("yargs")
-  .usage(`Usage: $0 path [--type filetype] [--maxdepth LEVELS] \n           [--name PATTERN] [-p] [-d]`)
+  .usage(`Usage: $0 path [--type filetype] [--maxdepth LEVELS]
+                [--name PATTERN] [-p] [-d] [-h]`)
   .command('path', 'A directory name (must exist)')
   .demand(1)
+  // note output formatting is clumsy. Will probably have to customize.
   .options({
     't': {
       alias: 'type',
@@ -57,11 +59,13 @@ var argv = require("yargs")
       requiresArg: true,
       nargs: 1,
       describe: 'only select entries whose name matches PATTERN'
+    },
+    'd': {
+      alias: 'depth',
+      type: 'boolean',
+      describe: "Process each directory's contents before the directory itself.",
     }
   })
-  .boolean('d')
-  .alias('d', 'depth')
-  .describe('d', "Process each directory's contents before the directory itself.")
   .help('h')
   .alias('h', 'help')
   .epilog('\u00a9 2016 A. Lloyd Flanagan (https://github.com/alflanagan/node_find)')
