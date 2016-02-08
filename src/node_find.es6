@@ -1,5 +1,11 @@
-/* @flow */
+/* note above more a declaration of intent than actual use, so far */
 "use strict";
+
+/** @module node_find */
+/**
+ * Implements a "find" command using node.
+ * @license GPL-3
+ */
 
 import "babel-polyfill";
 
@@ -11,6 +17,12 @@ var path = require("path");
 /**
  * An iterable tree of those directory entries which meet the criteria set by command-line arguments.
  *
+ * This object is responsible for all the command-line arguments that restrict the set of files
+ * tested (--type, --name, etc.) as well as presentation order as determined by the --depth)
+ * argument
+ *
+ * @param {Object} args - The command-line arguments. The object should be the result of a call
+ *     to the [`yargs`]{@link https://www.npmjs.com/package/yargs} library.
  */
 var FilteredDirectoryTree = (args) => {
   console.log(`path is ${args._}`);
@@ -72,7 +84,17 @@ var argv = require("yargs")
   .argv;
 
 /**
- * Returns true if the Fstat strcture 'fstat' has the type selectecd by 'type_letter'.
+ * Determines whether a file status matches a user-supplied type letter.
+ *
+ * @param {string} type_letter - A single letter identifying a directory entry type. Values other
+ *    than 'f', 'd', 'b', 'c', 'l', 'p', or 's' will throw RangeError.
+ *
+ * @param {fs.Stat} fstat - An [fs.Stat]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_class_fs_stats} object from.
+ *
+ * @return boolean
+ *
+ * @throws {RangeError} If `type_letter` is not one of the valid options:
+ *
  */
 function is_type_match(type_letter, fstat) {
   //arg_require_in_set(type_letter, ['b', 'c', 'd', 'f', 'l']);
@@ -101,8 +123,12 @@ function is_type_match(type_letter, fstat) {
 
 // shouldn't be too hard to write Promise-returning wrapper functions
 // for all the async calls in fs
-/*
- * Returns a promise that is fulfilled on 'fs.readdir(dirname)'.
+/**
+ * Async read a directory.
+ *
+ * @param {string} dirname - Name of a directory to read.
+ *
+ * @returns {Promise} a promise that is fulfilled on [`fs.readdir(dirname)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_readdir_path_callback}.
  */
 function readdirPromise(dirname) {
   return new Promise(function (resolve, reject) {
@@ -114,7 +140,11 @@ function readdirPromise(dirname) {
 }
 
 /**
- * Returns a promise that is fulfilled on 'fs.lstat(filename)'.
+ * Async get status of a file.
+ *
+ * @param {string} filename - The name of the file.
+ *
+ * @returns {Promise} a promise that is fulfilled on [`fs.lstat(filename)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_lstat_path_callback}.
  */
 function statPromise(filename) {
   return new Promise(function (resolve, reject) {
@@ -127,7 +157,9 @@ function statPromise(filename) {
 }
 
 /**
- * prints disk contents to the console as directed by command-line arguments
+ * Prints disk contents to the console as directed by command-line arguments
+ *
+ * @param {string} dirname - The top-level directory to be searched.
  *
  */
 function printContents(dirname) {

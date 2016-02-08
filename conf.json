@@ -1,0 +1,32 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "source": {
+        "includePattern": ".+\\.(js(doc)?|es6)$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+      "logoFile": "",
+      "cleverLinks": false,
+      "monospaceLinks": false,
+      "dateFormat": "ddd MMM Do YYYY",
+      "outputSourceFiles": true,
+      "outputSourcePath": true,
+      "systemName": "NodeFind",
+      "footer": "",
+      "copyright": "NodeFind Copyright © 2016 A. Lloyd Flanagan.",
+      "navType": "vertical",
+      "theme": "slate",
+      "linenums": true,
+      "collapseSymbols": false,
+      "inverseNav": true,
+      "protocol": "html://",
+      "methodHeadingReturns": false
+    },
+    "markdown": {
+      "parser": "gfm"
+    }
+}

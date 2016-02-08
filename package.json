@@ -16,12 +16,14 @@
     "babel-plugin-syntax-async-functions": "^6.3.13",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
+    "ink-docstrap": "^1.1.1",
     "jsdoc": "^3.4.0"
   },
   "scripts": {
     "test": "echo \"No tests specified, but fake it\" && exit 0",
     "prepublish": "babel.cmd src -d build || ./babel src -d build",
-    "linuxbuild": "./babel src -d build"
+    "linuxbuild": "./babel src -d build",
+    "makedoc": "node_modules/jsdoc/jsdoc.js src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs"
   },
   "author": "A. Lloyd Flanagan",
   "license": "GPL-3.0",
