@@ -33,3 +33,5 @@ node_find.js
 *~
 build/
 docs/
+# generated test suites
+spec/*.js
