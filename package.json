@@ -21,10 +21,9 @@
     "jsdoc": "^3.4.0"
   },
   "scripts": {
-    "test": "npm run-script linuxbuild && jasmine",
-    "winbuild": "node_modules/.bin/babel.cmd src -d build; node_modules/.bin/babel.cmd spec/es6 -d spec",
-    "linuxbuild": "node_modules/.bin/babel src -d build; node_modules/.bin/babel spec/es6 -d spec",
-    "prepublish": "npm run-script winbuild || npm run-script linuxbuild",
+    "test": "npm run-script build && jasmine",
+    "build": "node_modules/.bin/babel src -d build; node_modules/.bin/babel spec/es6 -d spec",
+    "prepublish": "npm run-script build",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs"
   },
   "author": "A. Lloyd Flanagan",
