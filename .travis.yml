@@ -1,11 +1,22 @@
-language: node_js
-node_js:
-  - "stable"
-  - "5.4"
+# node not properly supported on OS X yet
+# so we explicitly install nvm, use it to install node
+# https://github.com/travis-ci/travis-ci/issues/2311,
+# comment by https://github.com/mboudreau
+language: cpp
+env:
+  - NODE_VERSION="5.3"
+  - NODE_VERSION="5.4"
 os:
   - linux
   - osx
+matrix:
+  fast_finish: true
 before_install:
-  - echo "TRAVIS_OS_NAME is $TRAVIS_OS_NAME"
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install nvm     ; fi
+  - git clone https://github.com/creationix/nvm.git /tmp/.nvm;
+    source /tmp/.nvm/nvm.sh;
+    nvm install $NODE_VERSION;
+    nvm use --delete-prefix $NODE_VERSION;
+install:
+  - npm install
+script:
+  - npm test
