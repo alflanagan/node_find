@@ -41,42 +41,51 @@ export function FilteredDirectoryTree(args) {
     path: args._
   };
   //console.log(this.conf);
+}; // FilteredDirectoryTree()
 
+FilteredDirectoryTree.prototype.iterator = function () {
+  return this.selected(this.conf.path, this.conf.maxdepth);
 }
 
-FilteredDirectoryTree.prototype.iterator = function() {
-  return my_generator(this.conf.path, this.conf.maxdepth);
-}
-
-function* my_generator (direntry, depth) {
+FilteredDirectoryTree.prototype.selected = function* (direntry, depth) {
   // get fstats for direntry
   // if direntry.isDirectory and this.conf.depth, recurse
   // if direntry matches criteria, yield direntry
   // if direntry.isDirectory and not this.conf.depth, recurse
-  let fstats = statPromise(direntry);
-  if (!this.conf.depth && entry_matches(direntry, fstats)) {
-    yield direntry;
-  }
-  // TODO: check maxdepth!!
-  if (fstats.isDirectory()) {
-    // need to get filelist out of scope of inner function
-    let fsublist = [];
-    readdirPromise(direntry).then(function (filelist) {
-      fsublist = filelist;
-    }, function (err) {
-      console.error(`Got error in my_generator: ${err}.`);
-    });
-    while (fsublist.length > 0) {
-      yield* my_generator(fsublist.pop(), depth-1);
-    }
-  }
-  if (this.conf.depth && entry_matches(direntry, fstats)){
-    yield direntry;
-  }
+  statPromise(direntry)
+    .then(
+      function* (fstats) {
+        if (!this.conf.depth && this.entry_matches(direntry, fstats)) {
+          yield direntry;
+        }
+        console.log(`checked direentry ${direntry}`);
+        if (fstats.isDirectory() && depth >= 0) {
+          readdirPromise(direntry)
+            .then(
+              function* (filelist) {
+                while (filelist.length > 0) {
+                  yield * this.selected(filelist.pop(), depth - 1);
+                }
+                // must occur after yield of directory contents
+                if (this.conf.depth && entry_matches(direntry, fstats)) {
+                  yield direntry;
+                }
+              },
+              function (err) {
+                console.error(`Got error in my_generator: ${err}.`);
+              }
+            );
+        } else {
+          // must occur even if we didn't recurse
+          if (this.conf.depth && entry_matches(direntry, fstats)) {
+            yield direntry;
+          }
+        };
+      });
 };
 
-function entry_matches(direntry, fstats) {
-  if (!is_type_match(fstats)) {
+FilteredDirectoryTree.prototype.entry_matches = function (direntry, fstats) {
+  if (!this.is_type_match(fstats)) {
     return false;
   }
   if (!this.conf.name.match(direntry)) {
@@ -93,7 +102,7 @@ function entry_matches(direntry, fstats) {
  * @return boolean
  *
  */
-function is_type_match(fstat) {
+FilteredDirectoryTree.prototype.is_type_match = function (fstat) {
   switch(this.conf.type) {
     case '*':
       return true;
