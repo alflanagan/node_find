@@ -2,10 +2,12 @@
 "use strict";
 
 import "babel-polyfill";
-import {FilteredDirectoryTree} from "../build/filtered_dir_tree";
+import {
+  FilteredDirectoryTree
+} from "../build/filtered_dir_tree";
 
 describe("test search by type", function () {
-  it("should just work", function() {
+  it("should just work", function () {
     let args = {
       p: true,
       path: '.',
@@ -25,6 +27,6 @@ describe("test search by type", function () {
     for (var fname in iter) {
       console.log(fname);
       expect(typeof fname).toBe("string");
-   }
+    }
   });
 }); // describe()

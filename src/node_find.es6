@@ -11,7 +11,10 @@
 import "babel-polyfill";
 import fs from "fs";
 import FilteredDirectoryTree from "./filtered_dir_tree";
-import {statPromise, readdirPromise} from "./fs_promise";
+import {
+  statPromise,
+  readdirPromise
+} from "./fs_promise";
 
 var argv = require("yargs")
   .usage(`Usage: $0 path [selection-options] [action-options] [-h|--help]
@@ -67,12 +70,11 @@ var argv = require("yargs")
   })
   .help('h')
   .alias('h', 'help')
-  .version(function() {
+  .version(function () {
     return require('../package').version;
   })
   .epilog('\u00a9 2016 A. Lloyd Flanagan (https://github.com/alflanagan/node_find)')
   .argv;
-
 
 /**
  * Guided by parameters in args, performs the selected actions against directory entries in selected.
@@ -97,19 +99,21 @@ function perform_actions(selected, args) {
 
 var selectedEntries = new FilteredDirectoryTree(argv);
 
-readdirPromise('.').then(function (flist) {
-  flist.forEach (function (fname) {
-    console.log(fname);
+readdirPromise('.')
+  .then(function (flist) {
+    flist.forEach(function (fname) {
+      console.log(fname);
+    });
+  }, function (reason) {
+    console.log(`Promise was rejected: ${reason}`);
   });
-}, function (reason) {
-  console.log(`Promise was rejected: ${reason}`);
-});
 
-statPromise('.').then(function(fstats) {
-  console.log(fstats);
-},
-function(err) {
-  console.error(`Error in statPromise(): ${err}`)
-});
+statPromise('.')
+  .then(function (fstats) {
+      console.log(fstats);
+    },
+    function (err) {
+      console.error(`Error in statPromise(): ${err}`)
+    });
 
 perform_actions(selectedEntries, argv);

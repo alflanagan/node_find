@@ -2,7 +2,7 @@
 /* note above more a declaration of intent than actual use, so far */
 "use strict";
 
-/** @module fdr */
+/** @module filtered_dir_tree */
 /**
  * Provides a FilteredDirectoryTree object that represents a set of directory entries.
  *
@@ -13,9 +13,14 @@
  */
 
 import "babel-polyfill";
-import {statPromise, readdirPromise} from "./fs_promise";
+import {
+  statPromise,
+  readdirPromise
+} from "./fs_promise";
 import fs from "fs";
-import {Minimatch} from "minimatch";
+import {
+  Minimatch
+} from "minimatch";
 
 /**
  * An iterable tree of those directory entries which meet the criteria set by command-line arguments.
@@ -103,25 +108,25 @@ FilteredDirectoryTree.prototype.entry_matches = function (direntry, fstats) {
  *
  */
 FilteredDirectoryTree.prototype.is_type_match = function (fstat) {
-  switch(this.conf.type) {
-    case '*':
-      return true;
-    case 'f':
-      return fstat.isFile();
-    case 'd':
-      return fstat.isDirectory();
-    case 'b':
-      return fstat.isBlockDevice();
-    case 'c':
-      return fstat.isCharacterDevice();
-    case 'l':
-      return fstat.isSymbolicLink();
-    case 'p':
-      // p for pipe
-      return fstat.isFIFO();
-    case 's':
-      return fstat.isSocket();
-    default:
-      return false; //never reached, we hope
-    }
+  switch (this.conf.type) {
+  case '*':
+    return true;
+  case 'f':
+    return fstat.isFile();
+  case 'd':
+    return fstat.isDirectory();
+  case 'b':
+    return fstat.isBlockDevice();
+  case 'c':
+    return fstat.isCharacterDevice();
+  case 'l':
+    return fstat.isSymbolicLink();
+  case 'p':
+    // p for pipe
+    return fstat.isFIFO();
+  case 's':
+    return fstat.isSocket();
+  default:
+    return false; //never reached, we hope
+  }
 }
