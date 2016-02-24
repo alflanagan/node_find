@@ -19,12 +19,7 @@ describe("test search by type", function () {
     }
     let fdtree = new FilteredDirectoryTree(args);
 
-    let iter = fdtree.iterator();
-
-    expect(iter.next).toBeDefined();
-    var first = iter.next();
-    console.log(first);
-    for (var fname in iter) {
+    for (var fname in fdtree) {
       console.log(fname);
       expect(typeof fname).toBe("string");
     }
