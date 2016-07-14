@@ -1,21 +1,13 @@
-# node not properly supported on OS X yet
-# so we explicitly install nvm, use it to install node
-# https://github.com/travis-ci/travis-ci/issues/2311,
-# comment by https://github.com/mboudreau
-language: cpp
-env:
-  - NODE_VERSION="5.3"
-  - NODE_VERSION="5.4"
+language: node_js
+node_js:
+  - "5"
+  - "6"
+  - "6.1"
 os:
   - linux
-  - osx
+  - windows
 matrix:
   fast_finish: true
-before_install:
-  - git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-    source /tmp/.nvm/nvm.sh;
-    nvm install $NODE_VERSION;
-    nvm use --delete-prefix $NODE_VERSION;
 install:
   - npm install
 script:
