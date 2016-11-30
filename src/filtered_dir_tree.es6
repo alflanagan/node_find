@@ -1,7 +1,3 @@
-/* @flow */
-/* note above more a declaration of intent than actual use, so far */
-"use strict";
-
 /** @module filtered_dir_tree */
 /**
  * Provides a FilteredDirectoryTree object that represents a set of directory entries.
@@ -17,7 +13,6 @@ import {
   statPromise,
   readdirPromise
 } from "./fs_promise";
-import fs from "fs";
 import {
   Minimatch
 } from "minimatch";
@@ -52,15 +47,16 @@ FilteredDirectoryTree.prototype.iterator = function () {
   return this.selected(this.conf.path, this.conf.maxdepth);
 }
 
-FilteredDirectoryTree.prototype.selected = function* (direntry, depth) {
+FilteredDirectoryTree.prototype.selected = function (direntry, depth) {
   // get fstats for direntry
   // if direntry.isDirectory and this.conf.depth, recurse
   // if direntry matches criteria, yield direntry
   // if direntry.isDirectory and not this.conf.depth, recurse
+  var that = this // can't use arrow notation with generator
   statPromise(direntry)
     .then(
       function* (fstats) {
-        if (!this.conf.depth && this.entry_matches(direntry, fstats)) {
+        if (!that.conf.depth && that.entry_matches(direntry, fstats)) {
           yield direntry;
         }
         console.log(`checked direentry ${direntry}`);
@@ -69,20 +65,20 @@ FilteredDirectoryTree.prototype.selected = function* (direntry, depth) {
             .then(
               function* (filelist) {
                 while (filelist.length > 0) {
-                  yield * this.selected(filelist.pop(), depth - 1);
+                  yield * that.selected(filelist.pop(), depth - 1);
                 }
                 // must occur after yield of directory contents
-                if (this.conf.depth && entry_matches(direntry, fstats)) {
+                if (that.conf.depth && that.entry_matches(direntry, fstats)) {
                   yield direntry;
                 }
               },
               function (err) {
-                console.error(`Got error in my_generator: ${err}.`);
+                throw `Got error in my_generator: ${err}.`
               }
-            );
+            )
         } else {
           // must occur even if we didn't recurse
-          if (this.conf.depth && entry_matches(direntry, fstats)) {
+          if (that.conf.depth && that.entry_matches(direntry, fstats)) {
             yield direntry;
           }
         };
