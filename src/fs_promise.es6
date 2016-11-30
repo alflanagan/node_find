@@ -1,8 +1,7 @@
 /* @flow */
 /* note above more a declaration of intent than actual use, so far */
-"use strict";
+"use strict"
 
-/** @module */
 /**
  * Promise-based wrappers around node standard 'fs' module.
  *
@@ -12,8 +11,8 @@
  *
  */
 
-import "babel-polyfill";
-import fs from "fs";
+import "babel-polyfill"
+import fs from "fs"
 
 // should be possible to write a function to wrap an async call in a Promise, assuming it follows nodes's
 // library conventions for callbacks. This, however, is not quite it.
@@ -34,13 +33,14 @@ import fs from "fs";
  *
  * @returns {Promise} a promise that is fulfilled on [`fs.readdir(dirname)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_readdir_path_callback}.
  */
+
 export function readdirPromise(dirname) {
   return new Promise(function (resolve, reject) {
     fs.readdir(dirname, function (err, filelist) {
-      if (err) reject(err);
-      resolve(filelist);
+      if (err) reject(err)
+      resolve(filelist)
     })
-  });
+  })
 }
 
 /**
@@ -54,8 +54,8 @@ export function statPromise(filename) {
   return new Promise(function (resolve, reject) {
     // TODO: call state() or fstate() based on an argument
     fs.lstat(filename, function (err, fstat) {
-      if (err) reject(err);
-      resolve(fstat);
+      if (err) reject(err)
+      resolve(fstat)
     })
   })
 }
