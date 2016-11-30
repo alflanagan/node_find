@@ -32,3 +32,5 @@ build/
 docs/
 # generated test suites
 spec/*.js
+# temp file created by tern
+.tern-port
