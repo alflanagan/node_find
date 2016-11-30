@@ -1,7 +1,3 @@
-/* @flow */
-/* note above more a declaration of intent than actual use, so far */
-"use strict";
-
 /** @module node_find */
 /**
  * Implements a "find" command using node.
@@ -9,7 +5,6 @@
  */
 
 import "babel-polyfill";
-import fs from "fs";
 import FilteredDirectoryTree from "./filtered_dir_tree";
 import {
   statPromise,
@@ -17,17 +12,11 @@ import {
 } from "./fs_promise";
 
 var argv = require("yargs")
-  .usage(`Usage: $0 path [selection-options] [action-options] [-h|--help]
+  .usage(`Usage: $0 <path> [Selections] [Actions] [-h|--help]
 
-    selection-options:
-        [-t|--type letter] [-m|--maxdepth number] [-d|--depth] [-n|--name PATTERN]
-
-    action-options:
-        [-p|--print]
+path: A file or directory path.
   `)
-  .command('path', 'A directory name (must exist)')
   .demand(1)
-  // note output formatting is clumsy. Will probably have to customize.
   .options({
     't': {
       alias: 'type',
@@ -36,7 +25,8 @@ var argv = require("yargs")
       describe: "type of directory entries to match",
       nargs: 1,
       type: 'string',
-      choices: ['b', 'c', 'd', 'f', 'l', 'p', 's', '*']
+      choices: ['b', 'c', 'd', 'f', 'l', 'p', 's', '*'],
+      group: "Selections"
     },
     'm': {
       alias: 'maxdepth',
@@ -46,13 +36,14 @@ var argv = require("yargs")
         'command line arguments.  -maxdepth 0 means only apply the tests and actions to ' +
         'the command line arguments.',
       nargs: 1,
-      type: 'string'
+      type: 'string',
+      group: "Selections"
     },
     'p': {
       alias: 'print',
       type: 'boolean',
       describe: 'print directory entry name to stdout (default)',
-
+      group: "Actions"
     },
     'n': {
       alias: 'name',
@@ -60,12 +51,14 @@ var argv = require("yargs")
       default: '*',
       requiresArg: true,
       nargs: 1,
-      describe: 'only select entries whose name matches PATTERN'
+      describe: 'only select entries whose name matches PATTERN',
+      group: "Selections"
     },
     'd': {
       alias: 'depth',
       type: 'boolean',
       describe: "Process each directory's contents before the directory itself.",
+      group: "Actions"
     }
   })
   .help('h')
@@ -90,7 +83,7 @@ function perform_actions(selected, args) {
   } catch (err) {
     console.error(`Exception raised in perform_actions(): ${err}`);
   }
-  for (fname in selected.iterator()) {
+  for (let fname in selected.iterator()) {
     if (args.p) {
       console.log(fname);
     }
