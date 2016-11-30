@@ -8,14 +8,14 @@
  *
  */
 
-import "babel-polyfill";
+import "babel-polyfill"
 import {
   statPromise,
   readdirPromise
-} from "./fs_promise";
+} from "./fs_promise"
 import {
   Minimatch
-} from "minimatch";
+} from "minimatch"
 
 /**
  * An iterable tree of those directory entries which meet the criteria set by command-line arguments.
@@ -39,12 +39,12 @@ export function FilteredDirectoryTree(args) {
     maxdepth: args.m,
     name: new Minimatch(args.n, {}),
     path: args._
-  };
+  }
   //console.log(this.conf);
-}; // FilteredDirectoryTree()
+} // FilteredDirectoryTree()
 
 FilteredDirectoryTree.prototype.iterator = function () {
-  return this.selected(this.conf.path, this.conf.maxdepth);
+  return this.selected(this.conf.path, this.conf.maxdepth)
 }
 
 FilteredDirectoryTree.prototype.selected = function (direntry, depth) {
@@ -57,19 +57,19 @@ FilteredDirectoryTree.prototype.selected = function (direntry, depth) {
     .then(
       function* (fstats) {
         if (!that.conf.depth && that.entry_matches(direntry, fstats)) {
-          yield direntry;
+          yield direntry
         }
-        console.log(`checked direentry ${direntry}`);
+        console.log(`checked direentry ${direntry}`)
         if (fstats.isDirectory() && depth >= 0) {
           readdirPromise(direntry)
             .then(
               function* (filelist) {
                 while (filelist.length > 0) {
-                  yield * that.selected(filelist.pop(), depth - 1);
+                  yield * that.selected(filelist.pop(), depth - 1)
                 }
                 // must occur after yield of directory contents
                 if (that.conf.depth && that.entry_matches(direntry, fstats)) {
-                  yield direntry;
+                  yield direntry
                 }
               },
               function (err) {
@@ -79,20 +79,20 @@ FilteredDirectoryTree.prototype.selected = function (direntry, depth) {
         } else {
           // must occur even if we didn't recurse
           if (that.conf.depth && that.entry_matches(direntry, fstats)) {
-            yield direntry;
+            yield direntry
           }
-        };
-      });
-};
+        }
+      })
+}
 
 FilteredDirectoryTree.prototype.entry_matches = function (direntry, fstats) {
   if (!this.is_type_match(fstats)) {
-    return false;
+    return false
   }
   if (!this.conf.name.match(direntry)) {
-    return false;
+    return false
   }
-  return true;
+  return true
 }
 
 /**
@@ -105,24 +105,24 @@ FilteredDirectoryTree.prototype.entry_matches = function (direntry, fstats) {
  */
 FilteredDirectoryTree.prototype.is_type_match = function (fstat) {
   switch (this.conf.type) {
-  case '*':
-    return true;
-  case 'f':
-    return fstat.isFile();
-  case 'd':
-    return fstat.isDirectory();
-  case 'b':
-    return fstat.isBlockDevice();
-  case 'c':
-    return fstat.isCharacterDevice();
-  case 'l':
-    return fstat.isSymbolicLink();
-  case 'p':
+  case "*":
+    return true
+  case "f":
+    return fstat.isFile()
+  case "d":
+    return fstat.isDirectory()
+  case "b":
+    return fstat.isBlockDevice()
+  case "c":
+    return fstat.isCharacterDevice()
+  case "l":
+    return fstat.isSymbolicLink()
+  case "p":
     // p for pipe
-    return fstat.isFIFO();
-  case 's':
-    return fstat.isSocket();
+    return fstat.isFIFO()
+  case "s":
+    return fstat.isSocket()
   default:
-    return false; //never reached, we hope
+    return false //never reached, we hope
   }
 }
