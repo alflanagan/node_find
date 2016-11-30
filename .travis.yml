@@ -13,6 +13,7 @@ install:
   - npm install
 script:
   - npm test
+  - snyk test
 env:
   - CXX=g++-6.2
 addons:
