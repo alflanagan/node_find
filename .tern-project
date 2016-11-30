@@ -1,0 +1,10 @@
+{
+    "libs": ["ecmascript"],
+    "plugins": {
+	"node": {},
+	"es_modules": {},
+	"complete_strings": {},
+	"jasmine": {}
+    },
+    "ecmaversion": 7
+}
