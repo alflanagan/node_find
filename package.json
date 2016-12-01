@@ -18,9 +18,9 @@
   },
   "scripts": {
     "test": "jasmine",
-    "prepublish": "cp src/*.js build/",
-    "preinstall": "cp src/*.js build/",
-    "pretest": "cp src/*.js build/",
+    "prepublish": "mkdir -f build; cp src/*.js build/",
+    "preinstall": "mkdir -f build; cp src/*.js build/",
+    "pretest": "mkdir -f build; cp src/*.js build/",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs"
   },
   "author": "A. Lloyd Flanagan",

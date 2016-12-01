@@ -15,10 +15,10 @@ script:
   - npm test
   - snyk test
 env:
-  - CXX=g++-6.2
+  - CXX=g++-6
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-6.2
+      - g++-6
