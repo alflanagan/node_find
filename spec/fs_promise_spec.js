@@ -1,11 +1,12 @@
 /** test suite for fs_promise node module */
+/* global
+   describe, expect, it, fail */
+
 "use strict"
 
-import "babel-polyfill"
-import {
-  readdirPromise,
-  statPromise
-} from "../build/fs_promise"
+const fs_promise = require("../build/fs_promise")
+const readdirPromise = fs_promise.readdirPromise
+const statPromise = fs_promise.statPromise
 
 describe("read a directory", function () {
 
@@ -18,14 +19,16 @@ describe("read a directory", function () {
       .then(function (filelist) {
         expect(filelist).toContain("package.json")
         was_fulfilled = true
-      }, function (err) {
+      })
+      .catch(function (err) {
         fail(`Promise rejected: ${err}`)
       })
       .then(function () {
         // verify that we executed fulfillment function
         expect(was_fulfilled).toBe(true)
         done()
-      }, function (err) {
+      })
+      .catch(function (err) {
         fail(`second then rejected, ${err}`) //uh, what?
       })
   })
@@ -35,7 +38,8 @@ describe("read a directory", function () {
     readdirPromise("fred")
       .then(function () {
         fail("Promise was fulfilled with non-existent directory fred/.")
-      }, function (err) {
+      })
+      .catch(function (err) {
         was_rejected = true
         expect(err.errno).toBe(-2)
         expect(err.code).toBe("ENOENT")
@@ -58,8 +62,8 @@ describe("get file status", function () {
           expect(fstats.isFile()).toBe(true)
           expect(fstats.isDirectory()).toBe(false)
           was_fulfilled = true
-        },
-        function (err) {
+        })
+      .catch(function (err) {
           fail(`Promise rejected with error ${err}.`)
         })
       .then(

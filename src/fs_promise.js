@@ -11,8 +11,7 @@
  *
  */
 
-import "babel-polyfill"
-import fs from "fs"
+const fs = require("fs")
 
 // should be possible to write a function to wrap an async call in a Promise, assuming it follows nodes's
 // library conventions for callbacks. This, however, is not quite it.
@@ -31,10 +30,10 @@ import fs from "fs"
  *
  * @param {string} dirname - Name of a directory to read.
  *
- * @returns {Promise} a promise that is fulfilled on [`fs.readdir(dirname)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_readdir_path_callback}.
+ * @returns {Promise} a promise that is fulfilled on 
+ *     [`fs.readdir(dirname)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_readdir_path_callback}.
  */
-
-export function readdirPromise(dirname) {
+exports.readdirPromise = function (dirname) {
   return new Promise(function (resolve, reject) {
     fs.readdir(dirname, function (err, filelist) {
       if (err) reject(err)
@@ -48,9 +47,10 @@ export function readdirPromise(dirname) {
  *
  * @param {string} filename - The name of the file.
  *
- * @returns {Promise} a promise that is fulfilled on [`fs.lstat(filename)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_lstat_path_callback}.
+ * @returns {Promise} a promise that is fulfilled on 
+ *     [`fs.lstat(filename)`]{@link https://nodejs.org/dist/latest/docs/api/fs.html#fs_fs_lstat_path_callback}.
  */
-export function statPromise(filename) {
+exports.statPromise = function (filename) {
   return new Promise(function (resolve, reject) {
     // TODO: call state() or fstate() based on an argument
     fs.lstat(filename, function (err, fstat) {

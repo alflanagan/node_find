@@ -8,14 +8,11 @@
  *
  */
 
-import "babel-polyfill"
-import {
-  statPromise,
-  readdirPromise
-} from "./fs_promise"
-import {
-  Minimatch
-} from "minimatch"
+const fs_promise = require("./fs_promise"),
+  statPromise = fs_promise.statPromise,
+  readdirPromise = fs_promise.readdirPromise
+
+const Minimatch = require("minimatch")
 
 /**
  * An iterable tree of those directory entries which meet the criteria set by command-line arguments.
@@ -31,7 +28,7 @@ import {
  *
  */
 
-export class FilteredDirectoryTree {
+module.exports = class FilteredDirectoryTree {
   constructor(args) {
     // save args in easy-to-use object
     this.conf = {
@@ -39,7 +36,7 @@ export class FilteredDirectoryTree {
       depth: args.d,
       type: args.t,
       maxdepth: args.m,
-      name: new Minimatch(args.n, {}),
+      name: args.n,
       path: args._
     }
   }
@@ -117,8 +114,11 @@ export class FilteredDirectoryTree {
     if (!this.is_type_match(fstats)) {
       return false
     }
-    if (!this.conf.name.match(direntry)) {
-      return false
+    if (this.conf.name) {
+      let nm = new Minimatch(args.n, {})
+      if (!nm.match(direntry)) {
+	return false
+      }
     }
     return true
   }
