@@ -15,16 +15,21 @@ const fs_promise = require("./fs_promise"),
 const Minimatch = require("minimatch")
 
 /**
- * An iterable tree of those directory entries which meet the criteria set by command-line arguments.
+ * An iterable tree of those directory entries which meet the criteria
+ * set by command-line arguments.
  *
- * This object is responsible for all the command-line arguments that restrict the set of files
- * tested (--type, --name, etc.) as well as presentation order as determined by the --depth)
- * argument
+ * This object will model the tree of all the directory entries
+ * starting at a given path, possibly restricted by options like
+ * -prune or -depth.
  *
- * @param {Object} args - The command-line arguments. The object should be the result of a call
- *     to the [`yargs`]{@link https://www.npmjs.com/package/yargs} library.
+ * We have, in general, three types of command-line arguments: those
+ * that select/exclude certain directory entries, those that specify
+ * actions to take on those entries, and those that affect the search
+ * process itself. The last group are implemented by this class.
  *
- * @returns {Object} iterator over the selected directory entries (as strings).
+ * @param {Object} args - The command-line arguments. The object
+ *     should be the result of a call to the [`yargs`]{@link
+ *     https://www.npmjs.com/package/yargs} library.
  *
  */
 
@@ -115,9 +120,9 @@ module.exports = class FilteredDirectoryTree {
       return false
     }
     if (this.conf.name) {
-      let nm = new Minimatch(args.n, {})
+      let nm = new Minimatch(this.conf.name, {})
       if (!nm.match(direntry)) {
-	return false
+        return false
       }
     }
     return true
