@@ -4,12 +4,13 @@
  * @license GPL-3
  */
 
-import "babel-polyfill"
-import FilteredDirectoryTree from "./filtered_dir_tree"
-import {
-  statPromise,
-  readdirPromise
-} from "./fs_promise"
+const FilteredDirectoryTree = require("./filtered_dir_tree")
+
+const fs_promise = require("./fs_promise")
+const statPromise = fs_promise.statPromise
+const readdirPromise = fs_promise.readdirPromise
+const SelectionSpec = require("./selection_spec")
+const ActionSpec = require("./action_spec")
 
 var argv = require("yargs")
   .usage(`Usage: $0 <path> [Selections] [Actions] [-h|--help]
@@ -69,44 +70,13 @@ path: A file or directory path.
   .epilog("\u00a9 2016 A. Lloyd Flanagan (https://github.com/alflanagan/node_find)")
   .argv
 
-/**
- * Guided by parameters in args, performs the selected actions against directory entries in selected.
- *
- * @param {Object} selected - An instance of filtered_dir_tree selecting a set of directory entries.
- *
- * @param {Object} argv - An instance of a yargs call containing action arguments.
- *
- */
-function perform_actions(selected, args) {
-  try {
-    console.log("perform_actions()")
-  } catch (err) {
-    console.error(`Exception raised in perform_actions(): ${err}`)
-  }
-  for (let fname in selected.iterator()) {
-    if (args.p) {
-      console.log(fname)
-    }
+
+let searchSpace = new FilteredDirectoryTree(argv),
+    selector = new SelectionSpec(argv),
+    actions = new ActionSpec(argv)
+
+for (let file_spec in searchSpace) {
+  if (selector.selects(file_spec)) {
+    actions.run(file_spec)
   }
 }
-
-var selectedEntries = new FilteredDirectoryTree(argv)
-
-readdirPromise(".")
-  .then(function (flist) {
-    flist.forEach(function (fname) {
-      console.log(fname)
-    })
-  }, function (reason) {
-    console.log(`Promise was rejected: ${reason}`)
-  })
-
-statPromise(".")
-  .then(function (fstats) {
-    console.log(fstats)
-  },
-  function (err) {
-    console.error(`Error in statPromise(): ${err}`)
-  })
-
-perform_actions(selectedEntries, argv)
