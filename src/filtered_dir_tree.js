@@ -14,6 +14,8 @@ const fs_promise = require("./fs_promise"),
 
 const Minimatch = require("minimatch")
 
+const errors = require("./errors")
+
 /**
  * An iterable tree of those directory entries which meet the criteria
  * set by command-line arguments.
@@ -35,15 +37,24 @@ const Minimatch = require("minimatch")
 
 module.exports = class FilteredDirectoryTree {
   constructor(args) {
-    // save args in easy-to-use object
-    this.conf = {
-      print: args.p,
-      depth: args.d,
-      type: args.t,
-      maxdepth: args.m,
-      name: args.n,
-      path: args._
+    this.conf = {}
+    // get only configuration specs that matter to this object
+    this._acceptedKeys = new Set(["maxDepth", "depth", "_"])
+    for (let key in args) {
+      if (this._acceptedKeys.has(key)) {
+        this.conf[key] = args[key]
+      }
     }
+    if (args._.length != 1) {
+      throw new errors.ArgumentError(
+        "Don't know how to handle " + args._.length + " non-hyphenated"
+          + " arguments!")
+    }
+    this.conf["path"] = args._[0]
+  }
+
+  get acceptedKeys() {
+    return this._acceptedKeys
   }
 
   iterator() {
