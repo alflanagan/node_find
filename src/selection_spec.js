@@ -21,9 +21,32 @@ module.exports = class SelectionSpec {
    *
    * @param {Object} specs Object with one or more valid keys whose
    *     values will be used to select directory entries
+   *
    */
   constructor(specs) {
-    
+    this.conf = {}
+    console.log(specs)
+    this._acceptedKeys = new Set(["type", "name"])
+    for (let key in specs) {
+      if (this._acceptedKeys.has(key)) {
+        this.conf[key] = specs[key]
+      }
+    }
   }
 
+  /** list of keys which are germane to this object */
+  get acceptedKeys () {
+    return this._acceptedKeys
+  }
+
+  /**
+   * Determine whether a file is "selected" by the criteria of this
+   * object.
+   *
+   * @param fspec {Object} Single directory entry specification (@see
+   * FilteredDirectoryTree.iterator)
+   */
+  selects (fspec) {
+    console.log(fspec)
+  }
 }

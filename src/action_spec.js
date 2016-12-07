@@ -9,7 +9,7 @@
  *
  */
 
-module.exports = class SelectionSpec {
+module.exports = class ActionSpec {
 
   /*
    * Creates an object to perform actions on one or more directory
@@ -18,8 +18,18 @@ module.exports = class SelectionSpec {
    * @param {Object} actions Object whose key/values specify one or
    *     more actions to take
    */
-  constructor(specs) {
-    
+  constructor(actions) {
+    this.conf = {}
+    this._acceptedKeys = new Set(["print"])
+    for (let key in actions) {
+      if (this._acceptedKeys.has(key)) {
+        this.conf[key] = actions[key]
+      }
+    }
   }
 
+  /** list of valid keys accepted */
+  get acceptedKeys () {
+    return this.conf
+  }
 }
