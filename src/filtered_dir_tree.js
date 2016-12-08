@@ -8,12 +8,10 @@
  *
  */
 
-const fs_promise = require("./fs_promise"),
-  statPromise = fs_promise.statPromise,
-  readdirPromise = fs_promise.readdirPromise
-
+const fs_promise = require("./fs_promise")
+const statPromise = fs_promise.statPromise
+const readdirPromise = fs_promise.readdirPromise
 const Minimatch = require("minimatch")
-
 const errors = require("./errors")
 
 /**
@@ -38,8 +36,8 @@ const errors = require("./errors")
 module.exports = class FilteredDirectoryTree {
   constructor(args) {
     this.conf = {}
-    // get only configuration specs that matter to this object
-    this._acceptedKeys = new Set(["maxDepth", "depth", "_"])
+      // get only configuration specs that matter to this object
+    this._acceptedKeys = new Set(["maxDepth", "depth", "_", "debug"])
     for (let key in args) {
       if (this._acceptedKeys.has(key)) {
         this.conf[key] = args[key]
@@ -47,102 +45,68 @@ module.exports = class FilteredDirectoryTree {
     }
     if (args._.length != 1) {
       throw new errors.ArgumentError(
-        "Don't know how to handle " + args._.length + " non-hyphenated"
-          + " arguments!")
+        "Don't know how to handle " + args._.length + " non-hyphenated" +
+        " arguments!")
     }
     this.conf["path"] = args._[0]
+    this.debug_msg(`created FilteredDirectoryTree('${this.conf.path}')`)
   }
 
   get acceptedKeys() {
     return this._acceptedKeys
   }
 
-  iterator() {
-    return this.selected(this.conf.path, this.conf.maxdepth)
+  debug_msg(msg) {
+    if (this.conf.debug) {
+      console.log(msg)
+    }
   }
 
-  // this ... is problematic. Async generator??
-  * selected() {
-    var direntry = this.conf.path,
-      depth = this.conf.depth
-
-    // get fstats for direntry
-    // if direntry.isDirectory and this.conf.depth, recurse
-    // if direntry matches criteria, yield direntry
-    // if direntry.isDirectory and not this.conf.depth, recurse
-    statPromise(direntry)
+  process(selections, actions, apath) {
+    if (apath === undefined) {
+        this.debug_msg(`FilteredDirectoryTree.process(,,)`)
+    } else {
+        this.debug_msg(`FilteredDirectoryTree.process(,, '${apath}')`)
+    }
+    statPromise(apath || this.conf.path)
       .then(
-        function* (fstats) {
-          if (!this.conf.depth && this.entry_matches(direntry, fstats)) {
-            yield direntry
+        (stats) => {
+          /*
+           * { name: '.',
+           *   stats: 
+           *     { dev: 46,
+           *       mode: 16893,
+           *       nlink: 1,
+           *       uid: 1000,
+           *       gid: 1000,
+           *       rdev: 0,
+           *       blksize: 4096,
+           *       ino: 43409,
+           *       size: 482,
+           *       blocks: 0,
+           *       atime: 2016-12-07T21:44:20.457Z,
+           *       mtime: 2016-12-08T18:35:53.402Z,
+           *       ctime: 2016-12-08T18:35:53.402Z,
+           *       birthtime: 2016-12-08T18:35:53.402Z } }
+           */
+          if (selections.selects(stats)) {
+            this.debug_msg(stats.name, stats.stats.mode)
+            actions.takeAction(stats)
           }
-          console.log(`checked direentry ${direntry}`)
-          if (fstats.isDirectory() && depth >= 0) {
-            readdirPromise(direntry)
+          if (stats.stats.isDirectory()) {
+            readdirPromise(stats.name)
               .then(
-                function* (filelist) {
-                  while (filelist.length > 0) {
-                    yield* this.selected(filelist.pop(), depth - 1)
-                  }
-                  // must occur after yield of directory contents
-                  if (this.conf.depth && this.entry_matches(direntry, fstats)) {
-                    yield direntry
-                  }
-                },
-                function (err) {
-                  console.error(`Got error in my_generator: ${err}.`)
+                (flist) => {
+                  flist.forEach(
+                    (fname) => {
+                      this.process(selections, actions, stats.name +
+                                   '/'  + fname)
+                    }
+                  )
                 }
               )
-          } else {
-            // must occur even if we didn't recurse
-            if (this.conf.depth && this.entry_matches(direntry, fstats)) {
-              yield direntry
-            }
           }
-        })
+        }
+      )
   }
-
-  is_type_match(fstat) {
-    switch (this.conf.type) {
-    case "*":
-      return true
-    case "f":
-      return fstat.isFile()
-    case "d":
-      return fstat.isDirectory()
-    case "b":
-      return fstat.isBlockDevice()
-    case "c":
-      return fstat.isCharacterDevice()
-    case "l":
-      return fstat.isSymbolicLink()
-    case "p":
-      // p for pipe
-      return fstat.isFIFO()
-    case "s":
-      return fstat.isSocket()
-    default:
-      return false //never reached, we hope
-    }
-  }
-
-  entry_matches(direntry, fstats) {
-    if (!this.is_type_match(fstats)) {
-      return false
-    }
-    if (this.conf.name) {
-      let nm = new Minimatch(this.conf.name, {})
-      if (!nm.match(direntry)) {
-        return false
-      }
-    }
-    return true
-  }
-
 }
-
-// FilteredDirectoryTree.prototype.iterator = function () {
-//   return this.selected(this.conf.path, this.conf.maxdepth)
-// }
-//
-// FilteredDirectoryTree.prototype[Symbol.iterator] = FilteredDirectoryTree.prototype.selected

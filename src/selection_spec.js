@@ -13,6 +13,10 @@
  *
  */
 
+const minimatch = require("minimatch")
+const fs = require("fs")
+const path = require("path")
+
 module.exports = class SelectionSpec {
 
   /*
@@ -25,18 +29,24 @@ module.exports = class SelectionSpec {
    */
   constructor(specs) {
     this.conf = {}
-    console.log(specs)
-    this._acceptedKeys = new Set(["type", "name"])
+    this._acceptedKeys = new Set(["type", "name", "debug"])
     for (let key in specs) {
       if (this._acceptedKeys.has(key)) {
         this.conf[key] = specs[key]
       }
     }
+    // no keys is OK -- selects everything
   }
 
   /** list of keys which are germane to this object */
   get acceptedKeys () {
     return this._acceptedKeys
+  }
+
+  debug_msg(msg) {
+    if (this.conf.debug) {
+      console.log(msg)
+    }
   }
 
   /**
@@ -47,6 +57,14 @@ module.exports = class SelectionSpec {
    * FilteredDirectoryTree.iterator)
    */
   selects (fspec) {
-    console.log(fspec)
+    this.debug_msg(`selects() checking ${fspec.name} against pattern ${this.conf.name}`)
+    if ("name" in this.conf) {
+      let bname = path.basename(fspec.name)
+      if (!minimatch(bname, this.conf.name)) {
+        this.debug_msg(`selects() rejected ${fspec.name}`)
+        return false;
+      }
+    }
+    return true;  // passed all tests
   }
 }

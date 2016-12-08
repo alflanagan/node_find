@@ -55,7 +55,7 @@ exports.statPromise = function (filename) {
     // TODO: call state() or fstate() based on an argument
     fs.lstat(filename, function (err, fstat) {
       if (err) reject(err)
-      resolve(fstat)
+      resolve({'name': filename, 'stats': fstat})
     })
   })
 }

@@ -60,6 +60,11 @@ path: A file or directory path.
       type: "boolean",
       describe: "Process each directory's contents before the directory itself.",
       group: "Actions"
+    },
+    "debug": {
+      type: "boolean",
+      describe: "print lots of debug information",
+      group: "Actions"
     }
   })
   .help("h")
@@ -75,8 +80,4 @@ let searchSpace = new FilteredDirectoryTree(argv),
     selector = new SelectionSpec(argv),
     actions = new ActionSpec(argv)
 
-for (let file_spec in searchSpace) {
-  if (selector.selects(file_spec)) {
-    actions.run(file_spec)
-  }
-}
+searchSpace.process(selector, actions)
