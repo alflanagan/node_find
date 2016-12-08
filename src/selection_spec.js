@@ -57,14 +57,43 @@ module.exports = class SelectionSpec {
    * FilteredDirectoryTree.iterator)
    */
   selects (fspec) {
-    this.debug_msg(`selects() checking ${fspec.name} against pattern ${this.conf.name}`)
+    this.debug_msg(`selects() checking ${fspec.name} against pattern`
+                   + ` ${this.conf.name}`)
+    
     if ("name" in this.conf) {
       let bname = path.basename(fspec.name)
       if (!minimatch(bname, this.conf.name)) {
         this.debug_msg(`selects() rejected ${fspec.name}`)
         return false;
       }
-    }
+    } // this.conf.name
+    
+    if (this.conf.type !== "*") {
+      switch(this.conf.type) {
+      case "d":
+        if (!fspec.stats.isDirectory()) {return false }
+        break
+      case "f":
+        if (!fspec.stats.isFile()) { return false }
+        break
+      case "b":
+        if (!fspec.stats.isBlockDevice()) { return false }
+        break
+      case "c":
+        if (!fspec.stats.isCharacterDevice()) { return false }
+        break
+      case "l":
+        if (!fspec.stats.isSymbolicLink()) { return false }
+        break
+      case "p":
+        // p for pipe
+        if (!fspec.stats.isFIFO()) { return false }
+        break
+      case "s":
+        if (!fspec.stats.isSocket()) { return false }
+      }
+    } // this.conf.type
+    
     return true;  // passed all tests
   }
 }
