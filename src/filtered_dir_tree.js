@@ -62,12 +62,13 @@ module.exports = class FilteredDirectoryTree {
     }
   }
 
-  process(selections, actions, apath) {
+  process(selections, actions, apath, depth) {
     if (apath === undefined) {
         this.debug_msg(`FilteredDirectoryTree.process(,,)`)
     } else {
         this.debug_msg(`FilteredDirectoryTree.process(,, '${apath}')`)
     }
+    depth = depth || 0
     statPromise(apath || this.conf.path)
       .then(
         (stats) => {
@@ -94,17 +95,20 @@ module.exports = class FilteredDirectoryTree {
             actions.takeAction(stats)
           }
           if (stats.stats.isDirectory()) {
-            readdirPromise(stats.name)
-              .then(
-                (flist) => {
-                  flist.forEach(
-                    (fname) => {
-                      this.process(selections, actions, stats.name +
-                                   '/'  + fname)
-                    }
-                  )
-                }
-              )
+            if (! ("maxDepth" in this.conf
+                   && this.conf.maxDepth < depth)) {
+              readdirPromise(stats.name)
+                .then(
+                  (flist) => {
+                    flist.forEach(
+                      (fname) => {
+                        this.process(selections, actions, stats.name +
+                                     '/'  + fname, depth + 1)
+                      }
+                    )
+                  }
+                )
+            }
           }
         }
       )
