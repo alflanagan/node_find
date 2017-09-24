@@ -36,7 +36,7 @@ const errors = require("./errors")
 module.exports = class FilteredDirectoryTree {
   constructor(args) {
     this.conf = {}
-      // get only configuration specs that matter to this object
+    // get only configuration specs that matter to this object
     this._acceptedKeys = new Set(["maxdepth", "depth", "_", "debug"])
     for (let key in args) {
       if (this._acceptedKeys.has(key)) {
@@ -44,9 +44,7 @@ module.exports = class FilteredDirectoryTree {
       }
     }
     if (args._.length != 1) {
-      throw new errors.ArgumentError(
-        "Don't know how to handle " + args._.length + " non-hyphenated" +
-        " arguments!")
+      throw new errors.ArgumentError("Don't know how to handle " + args._.length + " non-hyphenated" + " arguments!")
     }
     this.conf["path"] = args._[0]
     this.debug_msg(`created FilteredDirectoryTree('${this.conf.path}')`)
@@ -64,17 +62,15 @@ module.exports = class FilteredDirectoryTree {
 
   process(selections, actions, apath, depth) {
     if (apath === undefined) {
-        this.debug_msg(`FilteredDirectoryTree.process(,,)`)
+      this.debug_msg(`FilteredDirectoryTree.process(,,)`)
     } else {
-        this.debug_msg(`FilteredDirectoryTree.process(,, '${apath}')`)
+      this.debug_msg(`FilteredDirectoryTree.process(,, '${apath}')`)
     }
     depth = depth || 0
-    statPromise(apath || this.conf.path)
-      .then(
-        (stats) => {
-          /*
+    statPromise(apath || this.conf.path).then((stats) => {
+      /*
            * { name: '.',
-           *   stats: 
+           *   stats:
            *     { dev: 46,
            *       mode: 16893,
            *       nlink: 1,
@@ -90,28 +86,28 @@ module.exports = class FilteredDirectoryTree {
            *       ctime: 2016-12-08T18:35:53.402Z,
            *       birthtime: 2016-12-08T18:35:53.402Z } }
            */
-          if (selections.selects(stats)) {
-            this.debug_msg(stats.name, stats.stats.mode)
-            actions.takeAction(stats)
-          }
-          if (stats.stats.isDirectory()) {
-            if (! ("maxdepth" in this.conf &&
-                   this.conf.maxdepth !== -1 &&
-                   this.conf.maxdepth < depth)) {
-              readdirPromise(stats.name)
-                .then(
-                  (flist) => {
-                    flist.forEach(
-                      (fname) => {
-                        this.process(selections, actions, stats.name +
-                                     '/'  + fname, depth + 1)
-                      }
-                    )
-                  }
-                )
+      if (selections.selects(stats)) {
+        this.debug_msg(stats.name, stats.stats.mode)
+        actions.takeAction(stats)
+      }
+      if (stats.stats.isDirectory()) {
+        if (!("maxdepth" in this.conf && this.conf.maxdepth !== -1 && this.conf.maxdepth < depth)) {
+          readdirPromise(stats.name).then((flist) => {
+            flist.forEach((fname) => {
+              this.process(selections, actions, stats.name + '/' + fname, depth + 1)
+            })
+          }).catch((e) => {
+            if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
+              console.error("Can not read directory " + e.path + " because " + e.message)
             }
-          }
+          })
         }
-      )
+      }
+    }).catch((e) => {
+      //TODO: add argument to turn these off
+      if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
+        console.error("Can not read file " + e.path + " becuase " + e.message)
+      }
+    })
   }
 }
