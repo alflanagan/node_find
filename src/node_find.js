@@ -26,7 +26,7 @@ path: A file or directory path.
         describe: "type of directory entries to match",
         nargs: 1,
         type: "string",
-        choices: ["b", "c", "d", "f", "l", "p", "s"],
+        choices: ["b", "c", "d", "f", "l", "p", "s", "*"],
         group: "Filters:",
         defaultDescription: "all types"
       },
@@ -92,12 +92,12 @@ path: A file or directory path.
     })
     .argv
 
-console.log(argv)
+//console.log(argv)
 let searchSpace = new FilteredDirectoryTree(argv),
     selector = new SelectionSpec(argv),
     actions = new ActionSpec(argv)
 
-//searchSpace.process(selector, actions)
+searchSpace.process(selector, actions)
 
 // Local Variables:
 // indent-tabs-mode: nil
