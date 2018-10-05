@@ -8,11 +8,11 @@
  *
  */
 
-const fs_promise = require("./fs_promise")
-const statPromise = fs_promise.statPromise
-const readdirPromise = fs_promise.readdirPromise
-const Minimatch = require("minimatch")
-const errors = require("./errors")
+const fsPromise = require('./fs_promise')
+const statPromise = fsPromise.statPromise
+const readdirPromise = fsPromise.readdirPromise
+const Minimatch = require('minimatch')
+const errors = require('./errors')
 
 /**
  * An iterable tree of those directory entries which meet the criteria
@@ -34,37 +34,37 @@ const errors = require("./errors")
  */
 
 module.exports = class FilteredDirectoryTree {
-  constructor(args) {
+  constructor (args) {
     this.conf = {}
     // get only configuration specs that matter to this object
-    this._acceptedKeys = new Set(["maxdepth", "depth", "_", "debug"])
+    this._acceptedKeys = new Set(['maxdepth', 'depth', '_', 'debug'])
     for (let key in args) {
       if (this._acceptedKeys.has(key)) {
         this.conf[key] = args[key]
       }
     }
-    if (args._.length != 1) {
-      throw new errors.ArgumentError("Don't know how to handle " + args._.length + " non-hyphenated" + " arguments!")
+    if (args._.length !== 1) {
+      throw new errors.ArgumentError("Don't know how to handle " + args._.length + ' non-hyphenated arguments!')
     }
-    this.conf["path"] = args._[0]
-    this.debug_msg(`created FilteredDirectoryTree('${this.conf.path}')`)
+    this.conf['path'] = args._[0]
+    this.debugMsg(`created FilteredDirectoryTree('${this.conf.path}')`)
   }
 
-  get acceptedKeys() {
+  get acceptedKeys () {
     return this._acceptedKeys
   }
 
-  debug_msg(msg) {
+  debugMsg (msg) {
     if (this.conf.debug) {
       console.log(msg)
     }
   }
 
-  process(selections, actions, apath, depth) {
+  process (selections, actions, apath, depth) {
     if (apath === undefined) {
-      this.debug_msg(`FilteredDirectoryTree.process(,,)`)
+      this.debugMsg(`FilteredDirectoryTree.process(,,)`)
     } else {
-      this.debug_msg(`FilteredDirectoryTree.process(,, '${apath}')`)
+      this.debugMsg(`FilteredDirectoryTree.process(,, '${apath}')`)
     }
     depth = depth || 0
     statPromise(apath || this.conf.path).then((stats) => {
@@ -87,26 +87,26 @@ module.exports = class FilteredDirectoryTree {
            *       birthtime: 2016-12-08T18:35:53.402Z } }
            */
       if (selections.selects(stats)) {
-        this.debug_msg(stats.name, stats.stats.mode)
+        this.debugMsg(stats.name, stats.stats.mode)
         actions.takeAction(stats)
       }
       if (stats.stats.isDirectory()) {
-        if (!("maxdepth" in this.conf && this.conf.maxdepth !== -1 && this.conf.maxdepth < depth)) {
+        if (!('maxdepth' in this.conf && this.conf.maxdepth !== -1 && this.conf.maxdepth < depth)) {
           readdirPromise(stats.name).then((flist) => {
             flist.forEach((fname) => {
               this.process(selections, actions, stats.name + '/' + fname, depth + 1)
             })
           }).catch((e) => {
             if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
-              console.error("Can not read directory " + e.path + " because " + e.message)
+              console.error(`Can not read directory ${e.path} because ${e.message}`)
             }
           })
         }
       }
     }).catch((e) => {
-      //TODO: add argument to turn these off
+      // TODO: add argument to turn these off
       if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
-        console.error("Can not read file " + e.path + " becuase " + e.message)
+        console.error(`Can not read file ${e.path} because ${e.message}`)
       }
     })
   }

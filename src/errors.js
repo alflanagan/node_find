@@ -3,4 +3,3 @@
  */
 
 exports.ArgumentError = class ArgumentError extends Error {}
-

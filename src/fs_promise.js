@@ -27,7 +27,7 @@ const fs = require("fs")
 
 /**
  * Async read a directory.
- *
+ *debugMsg
  * @param {string} dirname - Name of a directory to read.
  *
  * @returns {Promise} a promise that is fulfilled on
