@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /** @module node_find */
 /**
  * Implements a "find" command using node.

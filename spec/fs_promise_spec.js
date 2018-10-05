@@ -59,8 +59,8 @@ describe("get file status", function () {
     promise
       .then(
         function (fstats) {
-          expect(fstats.isFile()).toBe(true)
-          expect(fstats.isDirectory()).toBe(false)
+          expect(fstats.stats.isFile()).toBe(true)
+          expect(fstats.stats.isDirectory()).toBe(false)
           was_fulfilled = true
         })
       .catch(function (err) {

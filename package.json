@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "description": "emulating some functions of UNIX find",
   "preferGlobal": true,
-  "bin": {
-    "nodefind": "node_find.js"
-  },
+  "bin": "./build/node_find.js",
   "dependencies": {
     "minimatch": "^3.0.3",
     "yargs": "^6.4.0"
@@ -18,7 +16,9 @@
   },
   "scripts": {
     "test": "jasmine",
-    "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs"
+    "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs",
+    "prepare": "mkdir -p build; cp src/*.js build/",
+    "pretest": "mkdir -p build; cp src/*.js build/"
   },
   "author": "A. Lloyd Flanagan",
   "license": "GPL-3.0",
@@ -31,10 +31,5 @@
     "find",
     "utility",
     "command-line"
-  ],
-  "//": {
-    "prepublish": "mkdir -p build; cp src/*.js build/",
-    "preinstall": "mkdir -p build; cp src/*.js build/",
-    "pretest": "mkdir -p build; cp src/*.js build/"
-  }
+  ]
 }
