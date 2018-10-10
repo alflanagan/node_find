@@ -2,74 +2,73 @@
 /* global
    describe, expect, it, fail */
 
-"use strict"
+'use strict'
 
-const fs_promise = require("../build/fs_promise")
-const readdirPromise = fs_promise.readdirPromise
-const statPromise = fs_promise.statPromise
+const fsPromise = require('../build/fs_promise')
+const readdirPromise = fsPromise.readdirPromise
+const statPromise = fsPromise.statPromise
 
-describe("read a directory", function () {
-
+describe('read a directory', function () {
   // note call to done() is required to ensure Promise is fulfiiled or rejected before test
   // completes.
-  it("should be able to find files", function (done) {
-    let was_fulfilled = false,
-      promise = readdirPromise(".")
+  it('should be able to find files', function (done) {
+    let wasFulfilled = false
+    let promise = readdirPromise('.')
     promise
       .then(function (filelist) {
-        expect(filelist).toContain("package.json")
-        was_fulfilled = true
+        expect(filelist).toContain('package.json')
+        wasFulfilled = true
       })
       .catch(function (err) {
         fail(`Promise rejected: ${err}`)
       })
       .then(function () {
         // verify that we executed fulfillment function
-        expect(was_fulfilled).toBe(true)
+        expect(wasFulfilled).toBe(true)
         done()
       })
       .catch(function (err) {
-        fail(`second then rejected, ${err}`) //uh, what?
+        fail(`second then rejected, ${err}`) // uh, what?
       })
   })
 
   it("should reject if the directory doesn't exist", function (done) {
-    let was_rejected = false
-    readdirPromise("fred")
+    let wasRejected = false
+    readdirPromise('fred')
       .then(function () {
-        fail("Promise was fulfilled with non-existent directory fred/.")
+        fail('Promise was fulfilled with non-existent directory fred/.')
       })
       .catch(function (err) {
-        was_rejected = true
+        wasRejected = true
         expect(err.errno).toBe(-2)
-        expect(err.code).toBe("ENOENT")
+        expect(err.code).toBe('ENOENT')
       })
       .then(function () {
         // verify we executed failure function
-        expect(was_rejected).toBe(true)
+        expect(wasRejected).toBe(true)
         done()
       })
   })
 }) // describe()
 
-describe("get file status", function () {
-  it("should get status for normal file", function (done) {
-    let was_fulfilled = false,
-      promise = statPromise("package.json")
+describe('get file status', function () {
+  it('should get status for normal file', function (done) {
+    let wasFulfilled = false
+    let promise = statPromise('package.json')
     promise
       .then(
         function (fstats) {
           expect(fstats.stats.isFile()).toBe(true)
           expect(fstats.stats.isDirectory()).toBe(false)
-          was_fulfilled = true
+          wasFulfilled = true
         })
       .catch(function (err) {
-          fail(`Promise rejected with error ${err}.`)
-        })
+        fail(`Promise rejected with error ${err}.`)
+      })
       .then(
         function () {
           // verify fulfill function ran
-          expect(was_fulfilled).toBe(true)
+          expect(wasFulfilled).toBe(true)
           done()
         })
   })

@@ -1,6 +1,4 @@
-/* @flow */
-/* note above more a declaration of intent than actual use, so far */
-"use strict"
+'use strict'
 
 /**
  * Promise-based wrappers around node standard 'fs' module.
@@ -11,7 +9,7 @@
  *
  */
 
-const fs = require("fs")
+const fs = require('fs')
 
 // should be possible to write a function to wrap an async call in a Promise, assuming it follows nodes's
 // library conventions for callbacks. This, however, is not quite it.
@@ -53,7 +51,7 @@ exports.statPromise = function (filename) {
   return new Promise(function (resolve, reject) {
     // TODO: call state() or fstate() based on an argument
     fs.lstat(filename, function (err, fstat) {
-      err ? reject(err) : resolve({'name': filename, 'stats': fstat})
+      err ? reject(err) : resolve({ 'name': filename, 'stats': fstat })
     })
   })
 }

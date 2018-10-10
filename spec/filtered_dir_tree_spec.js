@@ -2,27 +2,27 @@
 /* global
    describe, expect, it */
 
-"use strict"
+'use strict'
 
-const FilteredDirectoryTree = require("../build/filtered_dir_tree")
+const FilteredDirectoryTree = require('../build/filtered_dir_tree')
 
-const make_args = function(args) {
+const makeArgs = function (args) {
   let allargs = {
-    "_": ".", 
-    "p": false,
-    "print": false,
-    "d": false,
-    "depth": false,
-    "h": false,
-    "help": false,
-    "version": false,
-    "t": "*",
-    "type": "*",
-    "m": -1,
-    "maxdepth": -1,
-    "n": "*",
-    "name": "*",
-    "$0": "build/node_find.js"
+    '_': '.',
+    'p': false,
+    'print': false,
+    'd': false,
+    'depth': false,
+    'h': false,
+    'help': false,
+    'version': false,
+    't': '*',
+    'type': '*',
+    'm': -1,
+    'maxdepth': -1,
+    'n': '*',
+    'name': '*',
+    '$0': 'build/node_find.js'
   }
   for (let key in args) {
     allargs[key] = args[key]
@@ -30,22 +30,22 @@ const make_args = function(args) {
   return allargs
 }
 
-describe("test search by type", function () {
-  it("should just work", function () {
-    let args = make_args({
+describe('test search by type', function () {
+  it('should just work', function () {
+    let args = makeArgs({
       p: true,
-      path: ".",
+      path: '.',
       maxDepth: -1,
-      name: "*",
-      n: "*",
+      name: '*',
+      n: '*',
       depth: false,
-      type: "f"
+      type: 'f'
     })
 
     let fdtree = new FilteredDirectoryTree(args)
 
     for (var fname in fdtree) {
-      expect(typeof fname).toBe("string")
+      expect(typeof fname).toBe('string')
     }
   })
 }) // describe()

@@ -11,7 +11,6 @@
 const fsPromise = require('./fs_promise')
 const statPromise = fsPromise.statPromise
 const readdirPromise = fsPromise.readdirPromise
-const Minimatch = require('minimatch')
 const errors = require('./errors')
 
 /**

@@ -12,3 +12,6 @@ the functionality should be broadly reusable.
 For more information on the find command, see also the detailed description in the
 [GNU manual](https://www.gnu.org/software/findutils/manual/html_mono/find.html). (Of course,
   this project is not affiliated with GNU in any way).
+
+
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)

@@ -1,9 +1,0 @@
-[ignore]
-
-[include]
-build/
-./node_modules
-
-[libs]
-
-[options]
