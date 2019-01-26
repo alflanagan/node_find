@@ -1,5 +1,0 @@
-Note to myself: global npm tools used
-
-js-beautify@1.5.10
-node-gyp@3.2.1
-node-inspector@0.12.5

@@ -13,7 +13,7 @@
  *
  */
 
-const minimatch = require('minimatch')
+const micromatch = require('micromatch')
 const path = require('path')
 
 module.exports = class SelectionDef {
@@ -59,7 +59,7 @@ module.exports = class SelectionDef {
 
     if ('name' in this.conf) {
       let bname = path.basename(fspec.name)
-      if (!minimatch(bname, this.conf.name)) {
+      if (!micromatch(bname, this.conf.name)) {
         this.debugMsg(`selects() rejected ${fspec.name}`)
         return false
       }

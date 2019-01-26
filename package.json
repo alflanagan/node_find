@@ -5,7 +5,7 @@
   "preferGlobal": true,
   "bin": "./build/node_find.js",
   "dependencies": {
-    "minimatch": "^3.0.3",
+    "micromatch": "^3.1.10",
     "yargs": "^6.4.0"
   },
   "devDependencies": {
