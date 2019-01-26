@@ -4,7 +4,7 @@
 
 'use strict'
 
-const FilteredDirectoryTree = require('../build/filtered_dir_tree')
+import { FilteredDirectoryTree } from '../filtered_dir_tree'
 
 const makeArgs = function (args) {
   let allargs = {

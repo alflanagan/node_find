@@ -9,7 +9,7 @@
  *
  */
 
-module.exports = class Action {
+export class Action {
   /*
    * Creates an object to perform actions on one or more directory
    * entries based on keys in `actions`.

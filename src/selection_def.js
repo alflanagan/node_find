@@ -16,7 +16,7 @@
 const micromatch = require('micromatch')
 const path = require('path')
 
-module.exports = class SelectionDef {
+export class SelectionDef {
   /*
    * Creates an object to filter directory entries based on the keys
    * and values in specs.

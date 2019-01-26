@@ -4,9 +4,7 @@
 
 'use strict'
 
-const fsPromise = require('../build/fs_promise')
-const readdirPromise = fsPromise.readdirPromise
-const statPromise = fsPromise.statPromise
+import { statPromise, readdirPromise } from '../fs_promise'
 
 describe('read a directory', function () {
   // note call to done() is required to ensure Promise is fulfiiled or rejected before test

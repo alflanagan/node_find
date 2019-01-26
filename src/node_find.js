@@ -4,10 +4,9 @@
  * @license GPL-3
  */
 
-const FilteredDirectoryTree = require('./filtered_dir_tree')
-
-const SelectionDef = require('./selection_def')
-const Action = require('./action')
+import { Action } from './action'
+import { FilteredDirectoryTree } from './filtered_dir_tree'
+import { SelectionDef } from './selection_def'
 
 var argv = require('yargs')
   .usage(`Usage: $0 PATH [Search Option \u2026] [Selection|Action \u2026] [-h|--help]

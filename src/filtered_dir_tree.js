@@ -8,10 +8,8 @@
  *
  */
 
-const fsPromise = require('./fs_promise')
-const statPromise = fsPromise.statPromise
-const readdirPromise = fsPromise.readdirPromise
-const errors = require('./errors')
+import { statPromise, readdirPromise } from './fs_promise'
+import { ArgumentError } from './errors'
 
 /**
  * An iterable tree of those directory entries which meet the criteria
@@ -32,7 +30,7 @@ const errors = require('./errors')
  *
  */
 
-module.exports = class FilteredDirectoryTree {
+export class FilteredDirectoryTree {
   constructor (args) {
     this.conf = {}
     // get only configuration specs that matter to this object
@@ -43,7 +41,7 @@ module.exports = class FilteredDirectoryTree {
       }
     }
     if (args._.length !== 1) {
-      throw new errors.ArgumentError("Don't know how to handle " + args._.length + ' non-hyphenated arguments!')
+      throw new ArgumentError("Don't know how to handle " + args._.length + ' non-hyphenated arguments!')
     }
     this.conf['path'] = args._[0]
     this.debugMsg(`created FilteredDirectoryTree('${this.conf.path}')`)
