@@ -20,7 +20,7 @@
     "standard": "^12.0.1"
   },
   "scripts": {
-    "test": "standard && jasmine",
+    "test": "npm run build && standard && jasmine",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs",
     "build": "node_modules/.bin/babel src -d build && node_modules/.bin/babel spec -d build/spec"
   },
