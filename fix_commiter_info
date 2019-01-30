@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# ARRRGG! Work user information appears in my private repo.
+# I suppose that's what I get for working on both on the same PC.
+git filter-branch --env-filter '
+
+OLD_EMAIL="aflanagan@bhmginc.com"
+CORRECT_NAME="A. Lloyd Flanagan"
+CORRECT_EMAIL="a.lloyd.flanagan@gmail.com"
+
+if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]
+then
+    export GIT_COMMITTER_EMAIL="$CORRECT_EMAIL"
+fi
+if [ "$GIT_AUTHOR_EMAIL" = "$OLD_EMAIL" ]
+then
+    export GIT_AUTHOR_EMAIL="$CORRECT_EMAIL"
+fi
+
+if [ "$GIT_COMMITTER_NAME" != "$CORRECT_NAME" ]
+then
+    export GIT_COMMITTER_NAME="$CORRECT_NAME"
+fi
+if [ "$GIT_AUTHOR_NAME" != "$CORRECT_NAME" ]
+then
+    export GIT_AUTHOR_NAME="$CORRECT_NAME"
+fi
+' --tag-name-filter cat -- --branches --tags 
