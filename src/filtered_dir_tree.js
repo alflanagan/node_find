@@ -34,7 +34,7 @@ export class FilteredDirectoryTree {
   constructor (args) {
     this.conf = {}
     // get only configuration specs that matter to this object
-    this._acceptedKeys = new Set(['maxdepth', 'depth', '_', 'debug'])
+    this._acceptedKeys = new Set(['maxdepth', 'depth', 'debug'])
     for (let key in args) {
       if (this._acceptedKeys.has(key)) {
         this.conf[key] = args[key]
@@ -88,7 +88,7 @@ export class FilteredDirectoryTree {
         actions.takeAction(stats)
       }
       if (stats.stats.isDirectory()) {
-        if (!('maxdepth' in this.conf && this.conf.maxdepth !== -1 && this.conf.maxdepth < depth)) {
+        if (!('maxdepth' in this.conf && this.conf.maxdepth <= depth )) {
           readdirPromise(stats.name).then((flist) => {
             flist.forEach((fname) => {
               this.process(selections, actions, stats.name + '/' + fname, depth + 1)

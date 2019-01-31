@@ -36,10 +36,9 @@ path: A file or directory path.
     'm': {
       alias: 'maxdepth',
       requiresArg: true,
-      default: -1, // sentinel meaning 'any depth'
-      describe: 'Descend at most LEVELS levels of directories below the ' +
-        'command line arguments.  --maxdepth 0 means only apply the tests and actions to ' +
-        'the immediate children of PATH.',
+      describe: 'Descend at most LEVELS directory levels below the given PATH' +
+        '\n--maxdepth 0 means only apply the tests and actions to ' +
+        'PATH itself.',
       nargs: 1,
       type: 'number',
       group: 'Search Options:',
