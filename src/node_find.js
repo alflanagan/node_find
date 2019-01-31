@@ -8,18 +8,25 @@ import { Action } from './action'
 import { FilteredDirectoryTree } from './filtered_dir_tree'
 import { SelectionDef } from './selection_def'
 
-var argv = require('yargs')
-  .usage(`Usage: $0 PATH [Search Option \u2026] [Selection|Action \u2026] [-h|--help]
+const thisYear = () => {
+  const today = new Date()
+  return today.getFullYear()
+}
+
+const argv = require('yargs')
+const COPY = '\u00a9'
+const HELLIP = '\u2026' // horiz. ellipsis
+
+argv.usage(`Usage: $0 PATH [Search Option ${HELLIP}] [Selection|Action ${HELLIP}] [-h|--help]
 
 path: A file or directory path.
-`)
-  .demand(1)
+`).demand(1)
   .options({
     't': {
       alias: 'type',
       requiresArg: true,
       default: '*',
-      describe: 'type of directory entries to match',
+      describe: 'typeletory entries to match',
       nargs: 1,
       type: 'string',
       choices: ['b', 'c', 'd', 'f', 'l', 'p', 's', '*'],
@@ -31,8 +38,8 @@ path: A file or directory path.
       requiresArg: true,
       default: -1, // sentinel meaning 'any depth'
       describe: 'Descend at most LEVELS levels of directories below the ' +
-          'command line arguments.  --maxdepth 0 means only apply the tests and actions to ' +
-          'the command line arguments.',
+        'command line arguments.  --maxdepth 0 means only apply the tests and actions to ' +
+        'the immediate children of PATH.',
       nargs: 1,
       type: 'number',
       group: 'Search Options:',
@@ -43,7 +50,7 @@ path: A file or directory path.
       type: 'boolean',
       default: true,
       describe: 'print directory entry name to stdout. This is the' +
-        ' default action if no other is specified.',
+      ' default action if no other is specified.',
       group: 'Actions:'
     },
     'n': {
@@ -71,25 +78,22 @@ path: A file or directory path.
   })
   .help('h')
   .alias('h', 'help')
-  .version(function () {
-    return require('../package').version
-  })
-  .epilog('\u00a9 2018 A. Lloyd Flanagan' +
-          ' (https://github.com/alflanagan/node_find)')
+  .version(require('../package').version)
+  .epilog(`${COPY} ${thisYear()} A. Lloyd Flanagan (https://github.com/alflanagan/node_find)`)
   .strict()
   .check((argv, aliases) => {
     if ((argv['maxdepth'] !== undefined && isNaN(argv['maxdepth'])) ||
-         argv['maxdepth'] < -1) {
-      throw new Error('Invalid value for maxdepth; must be' +
-                      ' non-negative integer')
+          argv['maxdepth'] < 0) {
+      throw new Error('Invalid value for --maxdepth; must be non-negative integer')
     }
     return true
   })
-  .argv
 
-let searchSpace = new FilteredDirectoryTree(argv)
-let selector = new SelectionDef(argv)
-let actions = new Action(argv)
+const args = argv.argv
+
+const searchSpace = new FilteredDirectoryTree(args)
+const selector = new SelectionDef(args)
+const actions = new Action(args)
 
 searchSpace.process(selector, actions)
 
