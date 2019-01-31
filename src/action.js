@@ -5,9 +5,11 @@
  *
  * @license GPL-3
  * @author A. Lloyd Flanagan
- * @copyright 2018
+ * @copyright 2018-2019
  *
  */
+
+import R from 'ramda'
 
 export class Action {
   /*
@@ -20,20 +22,15 @@ export class Action {
   constructor (actions) {
     this.conf = {}
     this._acceptedKeys = new Set(['print', 'debug'])
-    for (let key in actions) {
-      if (this._acceptedKeys.has(key)) {
-        this.conf[key] = actions[key]
-      }
-    }
+    const accepted = R.filter((key) => this._acceptedKeys.has(key), R.keys(actions))
+    R.forEach((key => { this.conf[key] = actions[key] }, accepted))
     // if no other action is chosen, default is --print
-    if (!('print' in this.conf) && !('debug' in this.conf)) {
-      this.conf.print = true
-    }
+    if (R.isEmpty(R.keys(this.conf))) { this.conf.print = true }
   }
 
   /** list of valid keys accepted */
   get acceptedKeys () {
-    return this.conf
+    return this._acceptedKeys
   }
 
   debugMsg (msg) {
@@ -43,7 +40,7 @@ export class Action {
   }
 
   takeAction (fspec) {
-    if ('print' in this.conf) {
+    if (R.has('print', this.conf)) {
       console.log(fspec.name)
     }
   }
