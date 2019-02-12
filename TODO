@@ -1,0 +1,8 @@
+
+Architecture:
+  ☐ Fully incorporate ramda and ramda-adjunct @est(2 days)
+
+Testing:
+  ☐ Ensure reasonable code coverage for existing unit tests @est(2 h)
+  ☐ Develop separate integration tests (for IO, etc) @est(3 h)
+
