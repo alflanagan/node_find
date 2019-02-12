@@ -26,7 +26,7 @@ path: A file or directory path.
       alias: 'type',
       requiresArg: true,
       default: '*',
-      describe: 'typeletory entries to match',
+      describe: 'type of directory entries to match',
       nargs: 1,
       type: 'string',
       choices: ['b', 'c', 'd', 'f', 'l', 'p', 's', '*'],
@@ -47,7 +47,7 @@ path: A file or directory path.
     'p': {
       alias: 'print',
       type: 'boolean',
-      default: true,
+      default: false,
       describe: 'print directory entry name to stdout. This is the' +
       ' default action if no other is specified.',
       group: 'Actions:'
@@ -62,12 +62,21 @@ path: A file or directory path.
       group: 'Filters:',
       defaultDescription: 'all names'
     },
-    'd': {
-      alias: 'depth',
-      type: 'boolean',
+    // 'd': {
+    //   alias: 'depth',
+    //   type: 'boolean',
+    //   default: false,
+    //   group: 'Search Options:',
+    //   describe: "Process each directory's contents before the directory itself."
+    // },
+    'f': {
+      alias: 'follow',
+      type: 'bool',
       default: false,
-      group: 'Search Options:',
-      describe: "Process each directory's contents before the directory itself."
+      requiresArg: false,
+      describe: 'follow symbolic links',
+      group: 'Search Options:'
+
     },
     'debug': {
       type: 'boolean',
