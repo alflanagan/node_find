@@ -3,7 +3,7 @@
  *
  * @license GPL-3
  * @author A. Lloyd Flanagan
- * @copyright 2016
+ * @copyright 2016-2019
  *
  */
 
