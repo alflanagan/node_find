@@ -5,6 +5,14 @@
 'use strict'
 
 import { statPromise, readdirPromise } from '../fs_promise'
+import os from 'os'
+
+const UNIX_NO_FILE = -2
+const DOS_NO_FILE = -4058
+
+function notFoundCode () {
+  return (os.platform() === 'win32') ? DOS_NO_FILE : UNIX_NO_FILE
+}
 
 describe('function readdirPromise', function () {
   describe('read a directory', function () {
@@ -39,7 +47,7 @@ describe('function readdirPromise', function () {
         })
         .catch(function (err) {
           wasRejected = true
-          expect(err.errno).toBe(-2)
+          expect(err.errno).toBe(notFoundCode())
           expect(err.code).toBe('ENOENT')
         })
         .then(function () {
@@ -91,7 +99,7 @@ describe('function statPromise', function () {
           })
         .catch(function (err) {
           wasRejected = true
-          expect(err.errno).toBe(-2)
+          expect(err.errno).toBe(notFoundCode())
           expect(err.code).toBe('ENOENT')
         })
         .then(

@@ -8,7 +8,7 @@
     "@babel/polyfill": "^7.2.5",
     "micromatch": "^3.1.10",
     "ramda": "^0.26.1",
-    "yargs": "^12.0"
+    "yargs": "^12.0.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -17,13 +17,16 @@
     "ink-docstrap": "^1.3.2",
     "jasmine": "^3.3",
     "jsdoc": ">=3.4",
-    "snyk": "^1.124.0",
+    "snyk": "^1.130.0",
     "standard": "^12.0.1"
   },
   "scripts": {
     "test": "npm run build && snyk test && standard && jasmine",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs",
-    "build": "node_modules/.bin/babel src -d build && node_modules/.bin/babel spec -d build/spec"
+    "build": "node_modules/.bin/babel src -d build && node_modules/.bin/babel spec -d build/spec",
+    "test_win": "npm run build_win && snyk test && standard && jasmine",
+    "makedoc_win": ".\\node_modules\\.bin\\jsdoc src -r -c conf.json -R README.md -t .\\node_modules\\ink-docstrap\\template -d docs",
+    "build_win": ".\\node_modules\\.bin\\babel src -d build && .\\node_modules\\.bin\\babel spec -d build\\spec"
   },
   "author": "A. Lloyd Flanagan",
   "license": "GPL-3.0",
