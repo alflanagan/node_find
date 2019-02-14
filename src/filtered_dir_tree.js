@@ -88,7 +88,7 @@ export class FilteredDirectoryTree {
         actions.takeAction(stats)
       }
       if (stats.stats.isDirectory()) {
-        if (!('maxdepth' in this.conf && this.conf.maxdepth <= depth )) {
+        if (!('maxdepth' in this.conf && this.conf.maxdepth <= depth)) {
           readdirPromise(stats.name).then((flist) => {
             flist.forEach((fname) => {
               this.process(selections, actions, stats.name + '/' + fname, depth + 1)
