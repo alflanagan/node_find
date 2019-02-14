@@ -26,7 +26,7 @@ export class SelectionDef {
    *
    */
   constructor (specs) {
-    this.conf = {}
+    this.conf = { name: '*', debug: false }
     this._acceptedKeys = new Set(['type', 'name', 'debug'])
     for (let key in specs) {
       if (this._acceptedKeys.has(key)) {
