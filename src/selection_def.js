@@ -9,15 +9,71 @@
  *
  * @license GPL-3
  * @author A. Lloyd Flanagan
- * @copyright 2018
+ * @copyright 2018-2019
  *
  */
 
-const micromatch = require('micromatch')
-const path = require('path')
+import R from 'ramda'
+import micromatch from 'micromatch'
+import { basename } from 'path'
+
+/**
+ * Returns a new object whose key/value pairs are the set of pairs in `source` for which the key is in
+ * `keySet`.
+ *
+ * @param {Set<String>} keySet
+ * @param {Object} source
+ */
+function filterKeys (keySet, source) {
+  const dest = {}
+  for (let key of R.keys(source)) {
+    if (keySet.has(key)) {
+      dest[key] = source[key]
+    }
+  }
+  return dest
+}
+
+/**
+ * Does the filename of the directory entry in `fspec` match a pattern?
+ *
+ * @param {string} pattern A pattern expression compatible with micromatch (https://github.com/micromatch/micromatch)
+ * @param {Object} fspec Single directory entry specification (@see
+ *                       FilteredDirectoryTree.iterator)
+ */
+function pathMatches (pattern, fspec) {
+  if (pattern === '*') return true // optimization
+  const theMatch = micromatch.match(basename(fspec.name), pattern)
+  return R.not(R.isEmpty(theMatch))
+}
+
+/**
+ * Is the file specified by `fspec` of the type indicated by `typeChar`?
+ *
+ * @param {string} typeChar One of the characters legal for the --type flag.
+ * @param {Object} fspec Single directory entry specification (@see
+ *                       FilteredDirectoryTree.iterator)
+ */
+function isFileOfType (typeChar, fspec) {
+  if (R.isNil(typeChar)) return true
+  const s = fspec.stats
+  console.log(`Checking file type ${typeChar}`)
+  console.log(s)
+  console.log(s.isFile)
+  return ({
+    'd': s.isDirectory,
+    'f': s.isFile,
+    'b': s.isBlockDevice,
+    'c': s.isCharacterDevice,
+    'l': s.isSymbolicLink,
+    'p': s.isFIFO,
+    's': s.isSocket,
+    '*': () => true
+  }[typeChar]())
+}
 
 export class SelectionDef {
-  /*
+  /**
    * Creates an object to filter directory entries based on the keys
    * and values in specs.
    *
@@ -26,13 +82,9 @@ export class SelectionDef {
    *
    */
   constructor (specs) {
-    this.conf = { name: '*', debug: false }
-    this._acceptedKeys = new Set(['type', 'name', 'debug'])
-    for (let key in specs) {
-      if (this._acceptedKeys.has(key)) {
-        this.conf[key] = specs[key]
-      }
-    }
+    this._acceptedKeys = new Set(['type', 'name', 'debug', 'accessed', 'modified', 'created'])
+    this.conf = filterKeys(this._acceptedKeys, specs)
+    this.debugMsg('SelectionDef()', this.conf)
     // no keys is OK -- selects everything
   }
 
@@ -41,9 +93,19 @@ export class SelectionDef {
     return this._acceptedKeys
   }
 
-  debugMsg (msg) {
+  /**
+   * Print message(s) to stdout if `debug` is set to `true` in the configuriation.
+   *
+   * @param {string} msg A debugging message to be printed.
+   * @param {any} optional Optional additional information to be printed, esp. useful for data whose
+   *                       `toString()` is actually less informative than calling `console.log()` directly.
+   */
+  debugMsg (msg, optional) {
     if (this.conf.debug) {
       console.log(msg)
+      if (!R.isNil(optional)) {
+        console.log(optional)
+      }
     }
   }
 
@@ -52,44 +114,16 @@ export class SelectionDef {
    * object.
    *
    * @param fspec {Object} Single directory entry specification (@see
-   * FilteredDirectoryTree.iterator)
+   *                       FilteredDirectoryTree.iterator)
    */
   selects (fspec) {
-    this.debugMsg(`selects() checking ${fspec.name} against pattern ${this.conf.name}`)
+    this.debugMsg('selects checking ', fspec)
 
-    if ('name' in this.conf) {
-      let bname = path.basename(fspec.name)
-      if (!micromatch(bname, this.conf.name)) {
-        this.debugMsg(`selects() rejected ${fspec.name}`)
-        return false
-      }
-    } // this.conf.name
+    if (R.has('name', this.conf) && !pathMatches(this.conf.name, fspec)) { return false }
 
-    if (this.conf.type !== '*') {
-      switch (this.conf.type) {
-        case 'd':
-          if (!fspec.stats.isDirectory()) { return false }
-          break
-        case 'f':
-          if (!fspec.stats.isFile()) { return false }
-          break
-        case 'b':
-          if (!fspec.stats.isBlockDevice()) { return false }
-          break
-        case 'c':
-          if (!fspec.stats.isCharacterDevice()) { return false }
-          break
-        case 'l':
-          if (!fspec.stats.isSymbolicLink()) { return false }
-          break
-        case 'p':
-          // p for pipe
-          if (!fspec.stats.isFIFO()) { return false }
-          break
-        case 's':
-          if (!fspec.stats.isSocket()) { return false }
-      }
-    } // this.conf.type
+    this.debugMsg(`selects() checking if ${fspec.name} is of type ${this.conf.type}`)
+
+    if (!isFileOfType(this.conf.type, fspec)) { return false }
 
     return true // passed all tests
   }
