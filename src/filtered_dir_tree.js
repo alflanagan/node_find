@@ -9,6 +9,7 @@
  */
 
 import { statPromise, readdirPromise } from './fs_promise'
+import R from 'ramda'
 import { ArgumentError } from './errors'
 
 /**
@@ -51,47 +52,47 @@ export class FilteredDirectoryTree {
     return this._acceptedKeys
   }
 
-  debugMsg (msg) {
+  /**
+   * Print message(s) to stdout if `debug` is set to `true` in the configuriation.
+   *
+   * @param {string} msg A debugging message to be printed.
+   * @param {any} optional Optional additional information to be printed, esp. useful for data whose
+   *                       `toString()` is actually less informative than calling `console.log()` directly.
+   */
+  debugMsg (msg, optional) {
     if (this.conf.debug) {
       console.log(msg)
+      if (!R.isNil(optional)) {
+        console.log(optional)
+      }
     }
   }
 
-  process (selections, actions, apath, depth) {
-    if (apath === undefined) {
-      this.debugMsg(`FilteredDirectoryTree.process(,,)`)
-    } else {
-      this.debugMsg(`FilteredDirectoryTree.process(,, '${apath}')`)
-    }
-    depth = depth || 0
-    statPromise(apath || this.conf.path).then((stats) => {
-      /*
-           * { name: '.',
-           *   stats:
-           *     { dev: 46,
-           *       mode: 16893,
-           *       nlink: 1,
-           *       uid: 1000,
-           *       gid: 1000,
-           *       rdev: 0,
-           *       blksize: 4096,
-           *       ino: 43409,
-           *       size: 482,
-           *       blocks: 0,
-           *       atime: 2016-12-07T21:44:20.457Z,
-           *       mtime: 2016-12-08T18:35:53.402Z,
-           *       ctime: 2016-12-08T18:35:53.402Z,
-           *       birthtime: 2016-12-08T18:35:53.402Z } }
-           */
+  /**
+   * Use `selections` to filter the directory tree. Apply any actions in `actions`
+   * to any selected directory entries.
+   *
+   * @param {SelectionDef} selections Criteria for selecting a set of directory entries.
+   * @param {Action} actions Definitions of actions to be taken.
+   */
+  process (selections, actions) {
+    return this._process(selections, actions, this.conf['path'], 0)
+  }
+
+  /**
+   * 'private' recursive implementation for `process()`.
+   */
+  _process (selections, actions, apath, depth) {
+    statPromise(apath).then((stats) => {
       if (selections.selects(stats)) {
-        this.debugMsg(stats.name, stats.stats.mode)
+        this.debugMsg(`${stats.name}: ${stats.stats.mode}`)
         actions.takeAction(stats)
       }
       if (stats.stats.isDirectory()) {
         if (!('maxdepth' in this.conf && this.conf.maxdepth <= depth)) {
           readdirPromise(stats.name).then((flist) => {
             flist.forEach((fname) => {
-              this.process(selections, actions, stats.name + '/' + fname, depth + 1)
+              this._process(selections, actions, stats.name + '/' + fname, depth + 1)
             })
           }).catch((e) => {
             if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
@@ -100,11 +101,30 @@ export class FilteredDirectoryTree {
           })
         }
       }
-    }).catch((e) => {
-      // TODO: add argument to turn these off
-      if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
-        console.error(`Can not read file ${e.path} because ${e.message}`)
-      }
     })
+    // .catch((e) => {
+    //   // TODO: add argument to turn these off
+    //   if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
+    //     console.error(`Can not read file ${e.path} because ${e.message}`)
+    //   }
+    // })
+    /*
+      * { name: '.',
+      *   stats:
+      *     { dev: 46,
+      *       mode: 16893,
+      *       nlink: 1,
+      *       uid: 1000,
+      *       gid: 1000,
+      *       rdev: 0,
+      *       blksize: 4096,
+      *       ino: 43409,
+      *       size: 482,
+      *       blocks: 0,
+      *       atime: 2016-12-07T21:44:20.457Z,
+      *       mtime: 2016-12-08T18:35:53.402Z,
+      *       ctime: 2016-12-08T18:35:53.402Z,
+      *       birthtime: 2016-12-08T18:35:53.402Z } }
+      */
   }
 }
