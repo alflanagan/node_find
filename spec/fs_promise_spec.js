@@ -85,9 +85,7 @@ describe('function statPromise', function () {
             done()
           })
     })
-  }) // describe()
 
-  describe('get file status', function () {
     it('should reject if a file does not exist', function (done) {
       let wasRejected = false
       const noSuchFileName = 'this_file_must_not_exist.ever'
