@@ -47,7 +47,7 @@ export function readdirPromise (dirname) {
  */
 export function statPromise (filename) {
   return new Promise(function (resolve, reject) {
-    // TODO: call state() or fstate() based on an argument
+    // TODO: call stat() or fstat() based on an argument
     fs.lstat(filename, function (err, fstat) {
       err ? reject(err) : resolve({ 'name': filename, 'stats': fstat })
     })
