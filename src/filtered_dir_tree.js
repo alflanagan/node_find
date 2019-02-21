@@ -1,16 +1,15 @@
 /** @module filtered_dir_tree */
 /**
- * Provides a FilteredDirectoryTree object that represents a set of directory entries.
+ * Provides a `FilteredDirectoryTree` object that represents a set of directory entries.
  *
  * @license GPL-3
  * @author A. Lloyd Flanagan
- * @copyright 2016
+ * @copyright 2016-2019
  *
  */
 
 import { statPromise, readdirPromise } from './fs_promise'
 import R from 'ramda'
-import { ArgumentError } from './errors'
 
 /**
  * An iterable tree of those directory entries which meet the criteria
@@ -26,30 +25,17 @@ import { ArgumentError } from './errors'
  * process itself. The last group are implemented by this class.
  *
  * @param {Object} args - The command-line arguments. The object
- *     should be the result of a call to the [`yargs`]{@link
- *     https://www.npmjs.com/package/yargs} library.
+ *     should be the result of a call to the [yargs]{@link
+ *     https://www.npmjs.com/package/yargs} library. NOTE: validation is
+ *     assumed to have been performed by yargs.
  *
  */
 
 export class FilteredDirectoryTree {
   constructor (args) {
-    this.conf = {}
-    // get only configuration specs that matter to this object
-    this._acceptedKeys = new Set(['maxdepth', 'depth', 'debug'])
-    for (let key in args) {
-      if (this._acceptedKeys.has(key)) {
-        this.conf[key] = args[key]
-      }
-    }
-    if (args._.length !== 1) {
-      throw new ArgumentError("Don't know how to handle " + args._.length + ' non-hyphenated arguments!')
-    }
-    this.conf['path'] = args._[0]
-    this.debugMsg(`created FilteredDirectoryTree('${this.conf.path}')`)
-  }
-
-  get acceptedKeys () {
-    return this._acceptedKeys
+    this.conf = args
+    this.path = args._[0]
+    this.debugMsg(`created FilteredDirectoryTree('${this.path}')`)
   }
 
   /**
@@ -76,7 +62,7 @@ export class FilteredDirectoryTree {
    * @param {Action} actions Definitions of actions to be taken.
    */
   process (selections, actions) {
-    return this._process(selections, actions, this.conf['path'], 0)
+    return this._process(selections, actions, this.path, 0)
   }
 
   /**
@@ -88,11 +74,14 @@ export class FilteredDirectoryTree {
         this.debugMsg(`${stats.name}: ${stats.stats.mode}`)
         actions.takeAction(stats)
       }
+
       if (stats.stats.isDirectory()) {
-        if (!('maxdepth' in this.conf && this.conf.maxdepth <= depth)) {
+        if (this.conf.maxdepth === -1 || this.conf.maxdepth <= depth) {
           readdirPromise(stats.name).then((flist) => {
             flist.forEach((fname) => {
-              this._process(selections, actions, stats.name + '/' + fname, depth + 1)
+              const fullname = `${stats.name}/${fname}`
+              this.debugMsg(`Recursing into directory ${fullname}`)
+              this._process(selections, actions, fullname, depth + 1)
             })
           }).catch((e) => {
             if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
@@ -102,13 +91,8 @@ export class FilteredDirectoryTree {
         }
       }
     })
-    // .catch((e) => {
-    //   // TODO: add argument to turn these off
-    //   if (e.code !== 'EPERM' && e.code !== 'EBUSY') {
-    //     console.error(`Can not read file ${e.path} because ${e.message}`)
-    //   }
-    // })
-    /*
+
+    /*  stats object for reference:
       * { name: '.',
       *   stats:
       *     { dev: 46,

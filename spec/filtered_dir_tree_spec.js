@@ -6,8 +6,13 @@
 
 import { FilteredDirectoryTree } from '../filtered_dir_tree'
 
+/**
+ * Helper function to create arguments object, with default values for tests.
+ *
+ * @param {Object} args Argument values that differ from defaults.
+ */
 const makeArgs = function (args) {
-  let allargs = {
+  const allargs = {
     '_': '.',
     'p': false,
     'print': false,
@@ -24,7 +29,7 @@ const makeArgs = function (args) {
     'name': '*',
     '$0': 'build/node_find.js'
   }
-  for (let key in args) {
+  for (const key in args) {
     allargs[key] = args[key]
   }
   return allargs
@@ -32,13 +37,11 @@ const makeArgs = function (args) {
 
 describe('test search by type', function () {
   it('should just work', function () {
-    let args = makeArgs({
+    const args = makeArgs({
       p: true,
-      path: '.',
       maxDepth: -1,
       name: '*',
       n: '*',
-      depth: false,
       type: 'f'
     })
 

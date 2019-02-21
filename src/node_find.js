@@ -17,10 +17,11 @@ const argv = require('yargs')
 const COPY = '\u00a9'
 const HELLIP = '\u2026' // horiz. ellipsis
 
-argv.usage(`Usage: $0 PATH [Search Option ${HELLIP}] [Selection|Action ${HELLIP}] [-h|--help]
+argv.usage(`Usage: $0 <path> [Search Option ${HELLIP}] [Selection|Action ${HELLIP}] [-h|--help]
 
 path: A file or directory path.
-`).demand(1)
+`) // .demand(1)
+  .demandCommand(1, 'You must provide a <path> argument')
   .options({
     't': {
       alias: 'type',
@@ -41,6 +42,7 @@ path: A file or directory path.
         'PATH itself.',
       nargs: 1,
       type: 'number',
+      default: -1,
       group: 'Search Options:',
       defaultDescription: 'no limit'
     },
@@ -90,8 +92,7 @@ path: A file or directory path.
   .epilog(`${COPY} ${thisYear()} A. Lloyd Flanagan (https://github.com/alflanagan/node_find)`)
   .strict()
   .check((argv, aliases) => {
-    if ((argv['maxdepth'] !== undefined && isNaN(argv['maxdepth'])) ||
-          argv['maxdepth'] < 0) {
+    if ((argv['maxdepth'] !== -1 && argv['maxdepth'] < 0) || isNaN(argv['maxdepth'])) {
       throw new Error('Invalid value for --maxdepth; must be non-negative integer')
     }
     return true
