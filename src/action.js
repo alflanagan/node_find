@@ -20,27 +20,28 @@ export class Action {
    *     more actions to take
    */
   constructor (actions) {
-    this.conf = {}
-    this._acceptedKeys = new Set(['print', 'debug'])
-    const accepted = R.filter((key) => this._acceptedKeys.has(key), R.keys(actions))
-    R.forEach((key => { this.conf[key] = actions[key] }, accepted))
-    // if no other action is chosen, default is --print
-    if (R.isEmpty(R.keys(this.conf))) { this.conf.print = true }
+    this.conf = actions
+    if (R.isEmpty(this.conf)) { this.conf.print = true }
   }
 
-  /** list of valid keys accepted */
-  get acceptedKeys () {
-    return this._acceptedKeys
-  }
-
-  debugMsg (msg) {
+  /**
+   * Print message(s) to stdout if `debug` is set to `true` in the configuriation.
+   *
+   * @param {string} msg A debugging message to be printed.
+   * @param {any} optional Optional additional information to be printed, esp. useful for data whose
+   *                       `toString()` is actually less informative than calling `console.log()` directly.
+   */
+  debugMsg (msg, optional) {
     if (this.conf.debug) {
       console.log(msg)
+      if (!R.isNil(optional)) {
+        console.log(optional)
+      }
     }
   }
 
   takeAction (fspec) {
-    if (R.has('print', this.conf)) {
+    if (this.conf.print) {
       console.log(fspec.name)
     }
   }

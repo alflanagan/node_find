@@ -14,7 +14,7 @@
  */
 
 import R from 'ramda'
-import { filterKeys, pathMatches } from 'useful'
+import { pathMatches } from './useful'
 
 /**
  * Is the file specified by `fspec` of the type indicated by `typeChar`?
@@ -23,22 +23,20 @@ import { filterKeys, pathMatches } from 'useful'
  * @param {Object} fspec Single directory entry specification (@see
  *                       FilteredDirectoryTree.iterator)
  */
-function isFileOfType (typeChar, fspec) {
+export function isFileOfType (typeChar, fspec) {
   if (R.isNil(typeChar)) return true
   const s = fspec.stats
-  console.log(`Checking file type ${typeChar}`)
-  console.log(s)
-  console.log(s.isFile)
-  return ({
-    'd': s.isDirectory,
-    'f': s.isFile,
-    'b': s.isBlockDevice,
-    'c': s.isCharacterDevice,
-    'l': s.isSymbolicLink,
-    'p': s.isFIFO,
-    's': s.isSocket,
+  // console.log(s.isFile())
+  return { // mapping from type character to boolean function
+    'd': () => s.isDirectory(),
+    'f': () => s.isFile(),
+    'b': () => s.isBlockDevice(),
+    'c': () => s.isCharacterDevice(),
+    'l': () => s.isSymbolicLink(),
+    'p': () => s.isFIFO(),
+    's': () => s.isSocket(),
     '*': () => true
-  }[typeChar]())
+  }[typeChar]()
 }
 
 export class SelectionDef {
@@ -51,19 +49,11 @@ export class SelectionDef {
    *
    */
   constructor (specs) {
-    this._acceptedKeys = new Set(['type', 'name', 'debug', 'accessed', 'modified', 'created'])
-    this.conf = filterKeys(this._acceptedKeys, specs)
-    this.debugMsg('SelectionDef()', this.conf)
-    // no keys is OK -- selects everything
-  }
-
-  /** list of keys which are germane to this object */
-  get acceptedKeys () {
-    return this._acceptedKeys
+    this.conf = specs
   }
 
   /**
-   * Print message(s) to stdout if `debug` is set to `true` in the configuriation.
+   * Print message(s) to stdout if `debug` is set to `true` in the configuration.
    *
    * @param {string} msg A debugging message to be printed.
    * @param {any} optional Optional additional information to be printed, esp. useful for data whose
@@ -88,7 +78,7 @@ export class SelectionDef {
   selects (fspec) {
     this.debugMsg('selects checking ', fspec)
 
-    if (R.has('name', this.conf) && !pathMatches(this.conf.name, fspec)) { return false }
+    if (!pathMatches(this.conf.name, fspec)) { return false }
 
     this.debugMsg(`selects() checking if ${fspec.name} is of type ${this.conf.type}`)
 

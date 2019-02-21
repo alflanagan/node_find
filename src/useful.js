@@ -13,23 +13,6 @@ import micromatch from 'micromatch'
 import { basename } from 'path'
 
 /**
- * Returns a new object whose key/value pairs are the set of pairs in `source` for which the key is in
- * `keySet`.
- *
- * @param {Set<String>} keySet
- * @param {Object} source
- */
-export function filterKeys (keySet, source) {
-  const dest = {}
-  for (let key of R.keys(source)) {
-    if (keySet.has(key)) {
-      dest[key] = source[key]
-    }
-  }
-  return dest
-}
-
-/**
  * Does the filename of the directory entry in `fspec` match a pattern?
  *
  * @param {string} pattern A pattern expression compatible with micromatch (https://github.com/micromatch/micromatch)
