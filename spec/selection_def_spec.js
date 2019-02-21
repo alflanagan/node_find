@@ -1,54 +1,54 @@
 /** test suite for selection_def node module */
 /* global
-   describe, expect, it */
+   describe, expect, it, beforeEach, afterEach */
 
 'use strict'
 
 import {
-  SelectionDef
+  SelectionDef // , isFileOfType
 } from '../selection_def'
+
+import fs from 'fs'
+import mock from 'mock-fs'
 
 describe('module selection_def', () => {
   describe('SelectionDef()', () => {
-    describe('the constructor', () => {
-      it('sets configuration from args or defaults', () => {
-        const newDef = new SelectionDef()
-        expect(newDef.conf).toBeDefined()
-        expect(newDef.conf).toEqual({
-          name: '*',
-          debug: false
-        })
-        const otherDef = new SelectionDef({
-          type: 'f',
-          name: '*.js',
-          debug: true
-        })
-        expect(otherDef.conf).toEqual({
-          name: '*.js',
-          debug: true,
-          type: 'f'
+    describe('selects()', () => {
+      beforeEach(() => {
+        mock({
+          'path/to/fake/dir': {
+            'some-file.txt': 'file content here',
+            'empty-dir': {
+              /** empty directory */ }
+          },
+          'path/to/some.png': Buffer.from([8, 6, 7, 5, 3, 0, 9]),
+          'some/other/path': {
+            /** another empty directory */ }
         })
       })
 
-      it('ignores irrelevant keys in arguments', () => {
-        const newDef = new SelectionDef({ fred: 'wilma', barney: 'betty' })
-        expect(newDef.conf).toBeDefined()
-        expect(newDef.conf).toEqual({
-          name: '*',
-          debug: false
-        })
-        const otherDef = new SelectionDef({
-          type: 'f',
-          name: '*.js',
-          debug: true,
-          because: 'why not',
-          for: 'the lulz'
-        })
-        expect(otherDef.conf).toEqual({
-          name: '*.js',
-          debug: true,
-          type: 'f'
-        })
+      afterEach(() => {
+        mock.restore()
+      })
+
+      it('selects a filespec whose name matches a pattern', () => {
+        const sdef = new SelectionDef({ name: '*.png', type: 'f' })
+        const stats = fs.statSync('path/to/some.png')
+        const fspec = {
+          name: 'path/to/some.png',
+          stats: stats
+        }
+        expect(sdef.selects(fspec)).toBe(true)
+      })
+
+      it('does not select a filespec whose name does not match a pattern', () => {
+        const sdef = new SelectionDef({ name: '*.png', type: 'f' })
+        const stats = fs.statSync('path/to/fake/dir/some-file.txt')
+        const fspec = {
+          name: 'path/to/fake/dir/some-file.txt',
+          stats: stats
+        }
+        expect(sdef.selects(fspec)).toBe(false)
       })
     })
   })
