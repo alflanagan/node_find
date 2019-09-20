@@ -7,6 +7,9 @@
  *
  */
 
+// TODO: replace Promises with folktale's Task. This would allow us to cancel (or never start) operations
+// in case of an error.
+
 const fs = require('fs')
 
 // should be possible to write a function to wrap an async call in a Promise, assuming it follows nodes's

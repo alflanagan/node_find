@@ -107,5 +107,30 @@ describe('function statPromise', function () {
             done()
           })
     })
+
+    it('should get status for a directory', function (done) {
+      let wasFulfilled = false
+      let promise = statPromise('.')
+      promise
+        .then(
+          function (fstats) {
+            expect(fstats.name).toEqual('.')
+            expect(fstats.stats.isFile()).toBe(false)
+            expect(fstats.stats.isDirectory()).toBe(true)
+            expect(fstats.stats.atimeMs).toBeGreaterThan(1.4e11)
+            expect(fstats.stats.ctimeMs).toBeGreaterThan(1.4e11)
+            expect(fstats.stats.mtimeMs).toBeGreaterThan(1.4e11)
+            wasFulfilled = true
+          })
+        .catch(function (err) {
+          fail(`Promise rejected with error ${err}.`)
+        })
+        .then(
+          function () {
+            // verify fulfill function ran
+            expect(wasFulfilled).toBe(true)
+            done()
+          })
+    })
   }) // describe()
 })
