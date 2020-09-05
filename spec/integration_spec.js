@@ -20,7 +20,7 @@ describe('The node_find executable', () => {
         name: '*',
         f: false,
         follow: false,
-        '$0': 'node_find'
+        $0: 'node_find'
       }
       main(args)
     })

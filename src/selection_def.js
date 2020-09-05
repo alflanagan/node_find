@@ -28,13 +28,13 @@ export function isFileOfType (typeChar, fspec) {
   const s = fspec.stats
   // console.log(s.isFile())
   return { // mapping from type character to boolean function
-    'd': () => s.isDirectory(),
-    'f': () => s.isFile(),
-    'b': () => s.isBlockDevice(),
-    'c': () => s.isCharacterDevice(),
-    'l': () => s.isSymbolicLink(),
-    'p': () => s.isFIFO(),
-    's': () => s.isSocket(),
+    d: () => s.isDirectory(),
+    f: () => s.isFile(),
+    b: () => s.isBlockDevice(),
+    c: () => s.isCharacterDevice(),
+    l: () => s.isSymbolicLink(),
+    p: () => s.isFIFO(),
+    s: () => s.isSocket(),
     '*': () => true
   }[typeChar]()
 }

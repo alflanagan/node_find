@@ -23,7 +23,7 @@ path: A file or directory path.
 `) // .demand(1)
   .demandCommand(1, 'You must provide a <path> argument')
   .options({
-    't': {
+    t: {
       alias: 'type',
       requiresArg: true,
       default: '*',
@@ -34,7 +34,7 @@ path: A file or directory path.
       group: 'Filters:',
       defaultDescription: 'all types'
     },
-    'm': {
+    m: {
       alias: 'maxdepth',
       requiresArg: true,
       describe: 'Descend at most LEVELS directory levels below the given PATH' +
@@ -46,7 +46,7 @@ path: A file or directory path.
       group: 'Search Options:',
       defaultDescription: 'no limit'
     },
-    'p': {
+    p: {
       alias: 'print',
       type: 'boolean',
       default: false,
@@ -54,7 +54,7 @@ path: A file or directory path.
       ' default action if no other is specified.',
       group: 'Actions:'
     },
-    'n': {
+    n: {
       alias: 'name',
       type: 'string',
       default: '*',
@@ -71,7 +71,7 @@ path: A file or directory path.
     //   group: 'Search Options:',
     //   describe: "Process each directory's contents before the directory itself."
     // },
-    'f': {
+    f: {
       alias: 'follow',
       type: 'bool',
       default: false,
@@ -80,7 +80,7 @@ path: A file or directory path.
       group: 'Search Options:'
 
     },
-    'debug': {
+    debug: {
       type: 'boolean',
       default: false,
       describe: 'print lots of debug information'
@@ -92,7 +92,7 @@ path: A file or directory path.
   .epilog(`${COPY} ${thisYear()} A. Lloyd Flanagan (https://github.com/alflanagan/node_find)`)
   .strict()
   .check((argv, aliases) => {
-    if ((argv['maxdepth'] !== -1 && argv['maxdepth'] < 0) || isNaN(argv['maxdepth'])) {
+    if ((argv.maxdepth !== -1 && argv.maxdepth < 0) || isNaN(argv.maxdepth)) {
       throw new Error('Invalid value for --maxdepth; must be non-negative integer')
     }
     return true
