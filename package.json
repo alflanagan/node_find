@@ -19,11 +19,11 @@
     "jasmine": "^3.6.1",
     "jsdoc": "^3.6.5",
     "mock-fs": "^4.13.0",
-    "snyk": "^1.389.0",
+    "snyk": "^1.391.1",
     "standard": "^14.3.4"
   },
   "scripts": {
-    "test": "npm run build && snyk test && standard && jasmine",
+    "test": "npm run build && snyk test && standard && jasmine build/spec/*spec.js",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs",
     "build": "node_modules/.bin/babel src -d build && node_modules/.bin/babel spec -d build/spec && chmod u+x build/node_find.js",
     "test_win": "npm run build_win && snyk test && standard && jasmine",
