@@ -22,7 +22,7 @@
     "standard": "^16.0.3"
   },
   "scripts": {
-    "test": "npm run build && snyk test && standard && jasmine build/spec/*spec.js",
+    "test": "npm run build && standard && jasmine build/spec/*spec.js",
     "makedoc": "node_modules/.bin/jsdoc src -r -c conf.json -R README.md -t ./node_modules/ink-docstrap/template -d docs",
     "build": "node_modules/.bin/babel src -d build && node_modules/.bin/babel spec -d build/spec && chmod u+x build/node_find.js",
     "test_win": "npm run build_win && snyk test && standard && jasmine",

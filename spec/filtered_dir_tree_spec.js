@@ -47,7 +47,7 @@ describe('test search by type', function () {
 
     const fdtree = new FilteredDirectoryTree(args)
 
-    for (var fname in fdtree) {
+    for (const fname in fdtree) {
       expect(typeof fname).toBe('string')
     }
   })
