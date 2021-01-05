@@ -52,7 +52,7 @@ export function statPromise (filename) {
   return new Promise(function (resolve, reject) {
     // TODO: call stat() or fstat() based on an argument
     fs.lstat(filename, function (err, fstat) {
-      err ? reject(err) : resolve({ 'name': filename, 'stats': fstat })
+      err ? reject(err) : resolve({ name: filename, stats: fstat })
     })
   })
 }

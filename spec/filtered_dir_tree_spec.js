@@ -13,21 +13,21 @@ import { FilteredDirectoryTree } from '../filtered_dir_tree'
  */
 const makeArgs = function (args) {
   const allargs = {
-    '_': '.',
-    'p': false,
-    'print': false,
-    'd': false,
-    'depth': false,
-    'h': false,
-    'help': false,
-    'version': false,
-    't': '*',
-    'type': '*',
-    'm': -1,
-    'maxdepth': -1,
-    'n': '*',
-    'name': '*',
-    '$0': 'build/node_find.js'
+    _: '.',
+    p: false,
+    print: false,
+    d: false,
+    depth: false,
+    h: false,
+    help: false,
+    version: false,
+    t: '*',
+    type: '*',
+    m: -1,
+    maxdepth: -1,
+    n: '*',
+    name: '*',
+    $0: 'build/node_find.js'
   }
   for (const key in args) {
     allargs[key] = args[key]
@@ -45,9 +45,9 @@ describe('test search by type', function () {
       type: 'f'
     })
 
-    let fdtree = new FilteredDirectoryTree(args)
+    const fdtree = new FilteredDirectoryTree(args)
 
-    for (var fname in fdtree) {
+    for (const fname in fdtree) {
       expect(typeof fname).toBe('string')
     }
   })

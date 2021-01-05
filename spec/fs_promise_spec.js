@@ -20,7 +20,7 @@ describe('function readdirPromise', function () {
     // completes.
     it('should be able to find files', function (done) {
       let wasFulfilled = false
-      let promise = readdirPromise('.')
+      const promise = readdirPromise('.')
       promise
         .then(function (filelist) {
           expect(filelist).toContain('package.json')
@@ -63,7 +63,7 @@ describe('function statPromise', function () {
   describe('get file status', function () {
     it('should get status for normal file', function (done) {
       let wasFulfilled = false
-      let promise = statPromise('package.json')
+      const promise = statPromise('package.json')
       promise
         .then(
           function (fstats) {
@@ -89,7 +89,7 @@ describe('function statPromise', function () {
     it('should reject if a file does not exist', function (done) {
       let wasRejected = false
       const noSuchFileName = 'this_file_must_not_exist.ever'
-      let promise = statPromise(noSuchFileName)
+      const promise = statPromise(noSuchFileName)
       promise
         .then(
           function (fstats) {
@@ -110,7 +110,7 @@ describe('function statPromise', function () {
 
     it('should get status for a directory', function (done) {
       let wasFulfilled = false
-      let promise = statPromise('.')
+      const promise = statPromise('.')
       promise
         .then(
           function (fstats) {
